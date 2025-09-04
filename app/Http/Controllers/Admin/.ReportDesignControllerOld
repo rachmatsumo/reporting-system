@@ -1,0 +1,129 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Models\ReportDesign;
+use App\Models\ReportField;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class ReportDesignControllerOld
+{
+    public function index()
+    {
+        $reportDesigns = ReportDesign::with('fields')->get();
+        return view('admin.report-design.index', compact('reportDesigns'));
+    }
+
+    public function create()
+    {
+        return view('admin.report-design.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'fields' => 'required|array|min:1',
+            'fields.*.name' => 'required|string|max:255',
+            'fields.*.label' => 'required|string|max:255',
+            'fields.*.type' => 'required|in:text,textarea,textarea_rich,number,file,image,date,time,month,year,checkbox,select',
+            'fields.*.required' => 'boolean',
+            'fields.*.default_value' => 'nullable',
+        ]);
+
+        DB::transaction(function () use ($request) {
+            $reportDesign = ReportDesign::create([
+                'name' => $request->name,
+                'description' => $request->description,
+            ]);
+
+            foreach ($request->fields as $fieldData) {
+                $defaultValue = $fieldData['default_value'] ?? '';
+                
+                // Jika type select, simpan opsi sebagai JSON
+                if ($fieldData['type'] === 'select' && isset($fieldData['options'])) {
+                    $defaultValue = json_encode($fieldData['options']);
+                }
+
+                ReportField::create([
+                    'report_design_id' => $reportDesign->id,
+                    // 'name'          => $fieldData['name'],
+                    'name'          => $fieldData['label'],
+                    'label'         => strtolower($fieldData['label']),
+                    'type'          => strtolower($fieldData['type']),
+                    'required'      => $fieldData['required'] ?? false,
+                    'default_value' => $defaultValue,
+                    'order'         => $fieldData['order'] ?? 0, // ✅ pakai order dari request
+                ]);
+            }
+        });
+
+        return redirect()->route('report-design.index')
+                        ->with('success', 'Report design berhasil dibuat');
+    }
+
+
+    public function show(ReportDesign $reportDesign)
+    {
+        $reportDesign->load('fields');
+        return view('admin.report-design.show', compact('reportDesign'));
+    }
+
+    public function edit(ReportDesign $reportDesign)
+    {
+        $reportDesign->load('fields');
+        return view('admin.report-design.edit', compact('reportDesign'));
+    }
+
+    public function update(Request $request, ReportDesign $reportDesign)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'fields' => 'required|array|min:1',
+        ]);
+
+        DB::transaction(function () use ($request, $reportDesign) {
+            $reportDesign->update([
+                'name' => $request->name,
+                'description' => $request->description,
+            ]);
+
+            // Hapus semua field lama
+            $reportDesign->fields()->delete();
+
+            // Tambah field baru sesuai urutan dari request
+            foreach ($request->fields as $fieldData) {
+                $defaultValue = $fieldData['default_value'] ?? '';
+
+                if ($fieldData['type'] === 'select' && isset($fieldData['options'])) {
+                    $defaultValue = json_encode($fieldData['options']);
+                }
+
+                ReportField::create([
+                    'report_design_id' => $reportDesign->id,
+                    // 'name'           => $fieldData['name'],
+                    'name'           => strtolower($fieldData['label']),
+                    'label'          => strtolower($fieldData['label']),
+                    'type'           => $fieldData['type'],
+                    'required'       => $fieldData['required'] ?? false,
+                    'default_value'  => $defaultValue,
+                    'order'          => $fieldData['order'] ?? 0, // <- gunakan nilai order dari hidden input
+                ]);
+            }
+        });
+
+        return redirect()->route('report-design.index')
+                        ->with('success', 'Report design berhasil diupdate');
+    }
+
+
+    public function destroy(ReportDesign $reportDesign)
+    {
+        $reportDesign->delete();
+        return redirect()->route('report-design.index')
+                        ->with('success', 'Report design berhasil dihapus');
+    }
+}

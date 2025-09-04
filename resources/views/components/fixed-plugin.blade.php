@@ -1,7 +1,7 @@
 <div class="fixed-plugin">
-    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
+    {{-- <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
       <i class="fa fa-cog py-2"> </i>
-    </a>
+    </a> --}}
     <div class="card shadow-lg ">
       <div class="card-header pb-0 pt-3 ">
         <div class="{{ (Request::is('rtl') ? 'float-end' : 'float-start') }}">
@@ -48,7 +48,7 @@
         <div class="form-check form-switch ps-0">
           <input class="form-check-input mt-1 ms-auto  {{ (Request::is('rtl') ? 'float-end' : '') }}"" type="checkbox" id="navbarFixed" onclick="navbarFixed(this)">
         </div>
-        <hr class="horizontal dark my-sm-4">
+        {{-- <hr class="horizontal dark my-sm-4">
         <a class="btn bg-gradient-dark w-100" href="https://www.creative-tim.com/product/soft-ui-dashboard-laravel" target="_blank">Free Download</a>
         <a class="btn btn-outline-dark w-100" href="/documentation/getting-started/overview.html" target="_blank">View documentation</a>
         <div class="w-100 text-center">
@@ -60,7 +60,7 @@
           <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/soft-ui-dashboard-pro-laravel" class="btn btn-dark mb-0 me-2" target="_blank">
             <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
           </a>
-        </div>
+        </div> --}}
       </div>
     </div>
   </div>

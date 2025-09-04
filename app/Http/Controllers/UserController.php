@@ -1,19 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-
+ 
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\View;
 
-class InfoUserController extends Controller
+class UserController extends Controller
 {
-
     public function create()
     {
-        return view('laravel-examples/user-profile');
+        return view('pages/user-profile');
     }
 
     public function store(Request $request)

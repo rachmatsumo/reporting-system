@@ -4,7 +4,7 @@
 
 <h2>🚀 Instalasi</h2>
 <ol>
-    <li>Clone repository: <code>git clone https://github.com/rachmatsumo/hris-attendance.git report_system</code></li>
+    <li>Clone repository: <code>git clone https://github.com/rachmatsumo/reporting-system.git report_system</code></li>
     <li>Buka directory: <code>cd report_system</code></li>
     <li>Jalankan: <code>composer install</code></li>
     <li>Salin file <code>.env.example</code> menjadi <code>.env</code></li>

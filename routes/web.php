@@ -9,6 +9,7 @@ use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\Admin\ReportDesignController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\CustomScriptController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
@@ -86,6 +87,10 @@ Route::group(['middleware' => 'auth'], function () {
     // })->name('api.report-design.preview');
 
 	Route::resource('report-design', ReportDesignController::class)->only(['index', 'show', 'edit', 'update', 'create', 'store', 'destroy']);
+	
+	// routes/web.php atau api.php
+	Route::post('custom-script/run-script', [CustomScriptController::class, 'run'])->name('custom-script.run');
+	Route::resource('custom-script', CustomScriptController::class)->only(['index', 'edit', 'update', 'create', 'store', 'destroy']);
 });
 
 

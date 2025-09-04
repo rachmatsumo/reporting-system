@@ -7,9 +7,14 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header border-bottom">
-                        <h5 class="mb-0">Buat Report: {{ $reportDesign->name }}</h5>
-                        <p class="text-muted mb-0">{{ $reportDesign->description }}</p>
+                    <div class="card-header border-bottom justify-content-between d-flex align-items-center">
+                        <div class="d-flex flex-column"> 
+                            <h5 class="mb-0">Buat Report: {{ $reportDesign->name }}</h5>
+                            <p class="text-muted mb-0">{{ $reportDesign->description }}</p>
+                        </div>
+                        <button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#modal-scripts">
+                            <i class="fas fa-code me-2"></i>Running Script
+                        </button>
                     </div>
                     <div class="card-body">
                         <form id="reportForm" method="POST" action="{{ route('reports.store') }}" enctype="multipart/form-data">
@@ -166,6 +171,8 @@
             </div>
         </div>
     </div>
+
+    @include('reports.partials.modal-scripts', ['scripts' => $scripts ?? []])
 
 </main>
 

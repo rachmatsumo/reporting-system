@@ -8,8 +8,15 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header border-bottom">
-                        <h5 class="mb-0">Edit Report : {{ $report->reportDesign->name }}</h5>
-                        <p class="mb-0 text-muted">{{ $report->reportDesign->description }}</p>
+                        <div class="d-flex justify-content-between align-items-center mb-2"> 
+                            <div class="d-flex flex-column">
+                                <h5 class="mb-0">Edit Report : {{ $report->reportDesign->name }}</h5>
+                                <p class="mb-0 text-muted">{{ $report->reportDesign->description }}</p>
+                            </div>
+                            <button class="btn btn-info mb-0" data-bs-toggle="modal" data-bs-target="#modal-scripts">
+                                <i class="fas fa-code me-2"></i>Running Script
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('reports.update', $report) }}" enctype="multipart/form-data" id="reportForm">
@@ -222,6 +229,8 @@
             </div>
         </div>
     </div>
+
+    @include('reports.partials.modal-scripts', ['scripts' => $scripts ?? []])
 
 </main>
 

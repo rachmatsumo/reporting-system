@@ -1,7 +1,7 @@
 @switch($field->type)
     @case('textarea')
     @case('textarea_rich')
-        <div class="border rounded p-2 bg-light">
+        <div class="border rounded p-2 bg-light text-wrap ">
             {!! nl2br(e($value)) !!}
         </div>
         @break

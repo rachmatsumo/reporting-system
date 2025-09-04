@@ -12,9 +12,9 @@
                     <div class="card-header border-bottom">
                         <div class="d-flex flex-row justify-content-between">
                             <div>
-                                <h5 class="mb-0">User Management</h5>
+                                <h5 class="mb-0">Custom Script</h5>
                             </div>
-                            <a href="{{ route('user-management.create') }}" class="btn bg-gradient-primary btn-sm mb-0" type="button">+&nbsp; New User</a>
+                            <a href="{{ route('custom-script.create') }}" class="btn bg-gradient-primary btn-sm mb-0" type="button">+&nbsp; New Script</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -23,16 +23,13 @@
                                 <thead>
                                     <tr>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            ID
+                                            No
+                                        </th> 
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Script Name
                                         </th> 
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Name
-                                        </th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Email
-                                        </th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            role
+                                            Status
                                         </th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Creation Date
@@ -43,32 +40,27 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($users as $user)
+                                    @php $no = 1; @endphp
+                                    @forelse($scripts as $script)
                                     <tr>
                                         <td class="ps-4">
-                                            <p class="text-xs font-weight-bold mb-0">{{ $user->id }}</p>
+                                            <p class="text-xs font-weight-bold mb-0">{{ $no++ }}</p>
+                                        </td>  
+                                        <td>
+                                            <p class="text-xs font-weight-bold mb-0">{{ $script->name }}</p>
                                         </td> 
                                         <td class="text-center">
-                                            <div class="d-flex align-items-center">
-                                                <img src="{{ $user->photo_url }}" class="avatar avatar-sm me-3">
-                                                <p class="text-xs font-weight-bold mb-0">{{ $user->name }}</p>
-                                            </div>
+                                            <span class="text-secondary text-xs font-weight-bold">{{ $script->is_active == 1 ? 'Active' : 'Non-Active' }}</span>
                                         </td>
                                         <td class="text-center">
-                                            <p class="text-xs font-weight-bold mb-0">{{ $user->email }}</p>
-                                        </td>
-                                        <td class="text-center">
-                                            <p class="text-xs font-weight-bold mb-0">{{ ucwords($user->role) }}</p>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="text-secondary text-xs font-weight-bold">{{ $user->created_at }}</span>
+                                            <span class="text-secondary text-xs font-weight-bold">{{ $script->created_at }}</span>
                                         </td>
                                         <td class="text-center">
                                             <div class="d-flex gap-2 justify-content-center"> 
-                                                <a href="{{ route('user-management.edit', $user->id) }}" data-bs-toggle="tooltip" data-bs-original-title="Edit">
-                                                    <i class="fas fa-user-edit text-secondary"></i>
+                                                <a href="{{ route('custom-script.edit', $script->id) }}" data-bs-toggle="tooltip" data-bs-original-title="Edit">
+                                                    <i class="fas fa-edit text-secondary"></i>
                                                 </a>
-                                              <form action="{{ route('user-management.destroy', $user->id) }}" 
+                                              <form action="{{ route('custom-script.destroy', $script->id) }}" 
                                                     method="POST" 
                                                     class="d-inline"
                                                     onsubmit="return confirm('Yakin ingin menghapus user ini?');">
@@ -86,8 +78,8 @@
                                     </tr> 
                                     @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">
-                                            <p class="text-xs font-weight-bold mb-0">No users found.</p>
+                                        <td colspan="4" class="text-center">
+                                            <p class="text-xs font-weight-bold mb-0">No scripts found.</p>
                                         </td>
                                     </tr>
                                     @endforelse

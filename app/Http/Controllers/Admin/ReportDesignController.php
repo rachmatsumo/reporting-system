@@ -188,30 +188,10 @@ class ReportDesignController
     }
 
     public function update(Request $request, ReportDesign $reportDesign)
-    { 
-        // dd($request->all());
+    {
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            
-            // Main fields validation
-            'main_fields.*.label' => 'required|string|max:255',
-            'main_fields.*.type' => 'required|in:text,textarea,textarea_rich,number,file,image,date,time,month,year,checkbox,select,map,personnel,attendance',
-            'main_fields.*.required' => 'nullable|boolean',
-            'main_fields.*.default_value' => 'nullable|string',
-            'main_fields.*.options.*.value' => 'required_if:main_fields.*.type,select|string',
-            'main_fields.*.options.*.label' => 'required_if:main_fields.*.type,select|string',
-            
-            // Sub reports validation
-            'sub_reports.*.name' => 'nullable|string|max:255',
-            'sub_reports.*.type' => 'nullable|in:form,checklist,table,custom',
-            'sub_reports.*.description' => 'nullable|string',
-            'sub_reports.*.fields.*.label' => 'required|string|max:255',
-            'sub_reports.*.fields.*.type' => 'required|in:text,textarea,textarea_rich,number,file,image,date,time,month,year,checkbox,select,map,personnel,attendance',
-            'sub_reports.*.fields.*.required' => 'nullable|boolean',
-            'sub_reports.*.fields.*.default_value' => 'nullable|string',
-            'sub_reports.*.fields.*.options.*.value' => 'required_if:sub_reports.*.fields.*.type,select|string',
-            'sub_reports.*.fields.*.options.*.label' => 'required_if:sub_reports.*.fields.*.type,select|string',
         ]);
 
         try {
@@ -223,31 +203,111 @@ class ReportDesignController
                 'description' => $request->description,
             ]);
 
-            // Delete existing fields and sub reports
-            $reportDesign->fields()->delete();
-            $reportDesign->subDesigns()->delete(); // This will cascade delete sub fields
+            // ====== HANDLE MAIN FIELDS ======
+            $existingFieldIds = $reportDesign->fields()->pluck('id')->toArray();
+            $submittedFieldIds = collect($request->main_fields)->pluck('id')->filter()->toArray();
 
-            // Save main fields
-            if ($request->has('main_fields')) {
-                $this->saveFields($request->main_fields, $reportDesign->id);
+            // Hapus field yang tidak ada di request
+            $reportDesign->fields()->whereNotIn('id', $submittedFieldIds)->delete();
+            
+            // Loop setiap main field
+            foreach ($request->main_fields ?? [] as $field) {
+                $fieldName = $field['name'] ?? Str::slug($field['label'], '_');
+                if (!empty($field['id'])) {
+                    // UPDATE field lama
+                    $reportDesign->fields()->where('id', $field['id'])->update([
+                        'name'          => $fieldName,
+                        'label'         => $field['label'],
+                        'type'          => $field['type'],
+                        'required'      => !empty($field['required']),
+                        'default_value' => $field['default_value'] ?? null,
+                        'options'       => $field['options'] ?? null,
+                    ]);
+                } else {
+                    // CREATE field baru
+                    
+                    $reportDesign->fields()->create([
+                        'name'          => $fieldName,
+                        'label'         => $field['label'],
+                        'type'          => $field['type'],
+                        'required'      => !empty($field['required']),
+                        'default_value' => $field['default_value'] ?? null,
+                        'options'       => $field['options'] ?? null,
+                    ]);
+                }
             }
 
-            // Save sub reports and their fields
-            if ($request->has('sub_reports')) {
-                $this->saveSubReports($request->sub_reports, $reportDesign->id);
+            // ====== HANDLE SUB REPORTS ======
+            $existingSubIds = $reportDesign->subDesigns()->pluck('id')->toArray();
+            $submittedSubIds = collect($request->sub_reports)->pluck('id')->filter()->toArray();
+
+            // Hapus subreport yang dihapus
+            $reportDesign->subDesigns()->whereNotIn('id', $submittedSubIds)->delete();
+
+            foreach ($request->sub_reports ?? [] as $subReportData) {
+                if (!empty($subReportData['id'])) {
+                    // Update sub report
+                    $subReport = $reportDesign->subDesigns()->find($subReportData['id']);
+                    $subReport->update([
+                        'name'        => $subReportData['name'],
+                        'type'        => $subReportData['type'],
+                        'description' => $subReportData['description'],
+                        'order_index' => $subReportData['order_index'] ?? 0,
+                    ]);
+                } else {
+                    // Create sub report baru
+                    $subReport = $reportDesign->subDesigns()->create([
+                        'name'        => $subReportData['name'],
+                        'type'        => $subReportData['type'],
+                        'description' => $subReportData['description'],
+                        'order_index' => $subReportData['order_index'] ?? 0,
+                    ]);
+                }
+
+                // ====== HANDLE SUB FIELDS ======
+                $existingSubFieldIds = $subReport->fields()->pluck('id')->toArray();
+                $submittedSubFieldIds = collect($subReportData['fields'] ?? [])->pluck('id')->filter()->toArray();
+
+                // Hapus sub fields yang hilang
+                $subReport->fields()->whereNotIn('id', $submittedSubFieldIds)->delete();
+
+                foreach ($subReportData['fields'] ?? [] as $field) {
+                    $fieldName = $field['name'] ?? Str::slug($field['label'], '_');
+                    if (!empty($field['id'])) {
+                        // Update field lama
+                        $subReport->fields()->where('id', $field['id'])->update([
+                            'name'          => $fieldName,
+                            'label'         => $field['label'],
+                            'type'          => $field['type'],
+                            'required'      => !empty($field['required']),
+                            'default_value' => $field['default_value'] ?? null,
+                            'options'       => $field['options'] ?? null,
+                            'order_index'   => $field['order_index'] ?? 0,
+                        ]);
+                    } else {
+                        // Create field baru
+                        $subReport->fields()->create([
+                            'name'          => $fieldName,
+                            'label'         => $field['label'],
+                            'type'          => $field['type'],
+                            'required'      => !empty($field['required']),
+                            'default_value' => $field['default_value'] ?? null,
+                            'options'       => $field['options'] ?? null,
+                            'order_index'   => $field['order_index'] ?? 0,
+                        ]);
+                    }
+                }
             }
 
             DB::commit();
-
             return redirect()->route('report-design.index')
-                           ->with('success', 'Report design berhasil diupdate!');
-
+                ->with('success', 'Report design berhasil diupdate!');
         } catch (\Exception $e) {
             DB::rollback();
             return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
-                        ->withInput();
+                ->withInput();
         }
-    }
+    } 
 
     public function destroy(ReportDesign $reportDesign)
     {

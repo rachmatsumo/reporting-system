@@ -53,6 +53,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
+  <!-- SweetAlert2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+  <!-- SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  @yield('styles')
+  
   <script>
   $(document).ready(function() {
       $('.richtext').summernote({
@@ -83,7 +93,7 @@
 
   @if(session()->has('success'))
     <div x-data="{ show: true}"
-        x-init="setTimeout(() => show = false, 4000)"
+        x-init="setTimeout(() => show = false, 3000)"
         x-show="show"
         class="position-fixed alert alert-success rounded text-sm py-2 px-4 bottom-1 right-1" style="right:10px">
       <p class="m-0 text-white">{{ session('success')}}</p>
@@ -91,20 +101,32 @@
   @endif 
 
   @if ($errors->any())
-    <div class="position-fixed alert alert-danger rounded text-sm py-2 px-4 bottom-1 right-1" style="right:10px">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
+      <div x-data="{ show: true }"
+          x-init="setTimeout(() => show = false, 3000)"
+          x-show="show"
+          x-transition
+          class="position-fixed alert alert-danger rounded text-sm py-2 px-4 bottom-1 right-1"
+          style="right:10px">
+          <ul class="m-0">
+              @foreach ($errors->all() as $error)
+                  <li>{{ $error }}</li>
+              @endforeach
+          </ul>
+      </div>
   @endif
 
   @if ($errors->has('error'))
-    <div class="position-fixed alert alert-warning rounded text-sm py-2 px-4 bottom-1 right-1" style="right:10px">
-        {{ $errors->first('error') }}
-    </div>
+      <div x-data="{ show: true }"
+          x-init="setTimeout(() => show = false, 3000)"
+          x-show="show"
+          x-transition
+          class="position-fixed alert alert-warning rounded text-sm py-2 px-4 bottom-1 right-1"
+          style="right:10px">
+          {{ $errors->first('error') }}
+      </div>
   @endif
+
+
     <!--   Core JS Files   -->
   <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
   <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
@@ -129,6 +151,8 @@
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="{{ asset('assets/js/soft-ui-dashboard.min.js?v=1.0.3') }}"></script>
+
+  @yield('scripts')
 </body>
 
 </html>

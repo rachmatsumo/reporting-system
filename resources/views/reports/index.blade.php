@@ -12,7 +12,7 @@
                             <h5 class="mb-0">Reports</h5>
                             <div>
                                 <a href="{{ route('reports.create') }}" class="btn btn-primary mb-0">
-                                    <i class="fas fa-plus"></i> Create New Report
+                                    <i class="fas fa-plus"></i> Create New
                                 </a>
                                 <a href="{{ route('report-design.index') }}" class="btn btn-outline-secondary mb-0">
                                     <i class="fas fa-cog"></i> Manage Report Designs
@@ -68,7 +68,7 @@
 
                         @if($reports->count() > 0)
                             <!-- Reports Table -->
-                            <div class="table-responsive" style="height: 400px; overflow-y: auto;">
+                            <div class="table-responsive" style="height: 300px; overflow-y: auto;">
                                 <table class="table table-striped table-hover">
                                     <thead class="table-light">
                                         <tr>
@@ -388,6 +388,7 @@
     }
 
     .table td {
+        font-size : 0.850rem;
         vertical-align: middle;
     }
 

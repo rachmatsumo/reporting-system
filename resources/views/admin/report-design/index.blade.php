@@ -6,7 +6,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-12">
-        <div class="card mb-4">
+        <div class="card">
           <div class="card-header border-bottom">
             <div class="d-flex flex-row justify-content-between">
               <div>

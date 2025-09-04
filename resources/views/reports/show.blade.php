@@ -233,7 +233,7 @@
 
 <style>
 @media print {
-    .btn, .nav-tabs, .card-header .btn, .text-end {
+    .btn, .nav-tabs, .card-header .btn, .text-end, .navbar {
         display: none !important;
     }
     

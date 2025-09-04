@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\CustomScript;
 
 class ReportController
 {
@@ -48,20 +49,22 @@ class ReportController
 
     public function create()
     {
+        $scripts = CustomScript::where('is_active', true)->get();
         $reportDesigns = ReportDesign::where('is_active', true)
                                    ->orderBy('name')
                                    ->get();
 
-        return view('reports.select-design', compact('reportDesigns'));
+        return view('reports.select-design', compact('reportDesigns', 'scripts'));
     }
 
     public function createFromDesign(ReportDesign $reportDesign)
     {
+        $scripts = CustomScript::where('is_active', true)->get();
         $reportDesign->load(['fields', 'subDesigns.fields']);
      
         $users = User::select('id', 'name')->orderBy('name')->get();
         
-        return view('reports.create', compact('reportDesign', 'users'));
+        return view('reports.create', compact('reportDesign', 'users', 'scripts'));
     }
 
     public function store(Request $request)
@@ -115,6 +118,7 @@ class ReportController
 
     public function edit(Report $report)
     {
+        $scripts = CustomScript::where('is_active', true)->get();
         $users = User::select('id', 'name')->orderBy('name')->get();
 
         $report->load([
@@ -126,7 +130,7 @@ class ReportController
 
         // dd($report);
 
-        return view('reports.edit', compact('report', 'users'));
+        return view('reports.edit', compact('report', 'users', 'scripts'));
     }
 
     public function update(Request $request, Report $report)

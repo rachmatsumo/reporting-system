@@ -7,7 +7,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card mb-4">
+                <div class="card">
                     <div class="card-header border-bottom">
                         <div class="d-flex flex-row justify-content-between">
                         <div>
@@ -51,7 +51,7 @@
 
                             <div class="row mb-3"> 
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                                    <label class="form-label">Role <span class="text-danger">*</span></label>
                                     <select type="role" name="role" class="form-select @error('role') is-invalid @enderror" required> 
                                         <option value="" disabled selected>Select Role</option>
                                         <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>

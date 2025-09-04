@@ -65,6 +65,7 @@
                                         <div id="mainFieldsContainer">
                                             @foreach($reportDesign->fields as $field)
                                             <div class="position-relative field-item border rounded p-3 mb-3" id="main-field-{{ $loop->index }}">
+                                                <input type="hidden" name="main_fields[{{ $loop->index }}][id]" value="{{ $field->id }}">
                                                 <div class="d-flex position-absolute top-0 start-1">
                                                     <span class="drag-handle text-muted" style="cursor: move;">
                                                         <i class="fas fa-grip-vertical"></i>
@@ -166,6 +167,7 @@
                                         <div id="subReportsContainer">
                                             @foreach($reportDesign->subDesigns as $subDesign)
                                             <div class="sub-report-card" id="sub-report-{{ $loop->index }}">
+                                                <input type="hidden" name="sub_reports[{{ $loop->index }}][id]" value="{{ $subDesign->id }}">
                                                 <div class="sub-report-header">
                                                     <div class="row align-items-center">
                                                         <div class="col-md-4">
@@ -210,6 +212,7 @@
                                                         <div id="subFieldsContainer-{{ $loop->index }}">
                                                             @foreach($subDesign->fields as $subField)
                                                             <div class="position-relative field-item border rounded p-3 mb-3" id="sub-field-{{ $loop->parent->index }}-{{ $loop->index }}">
+                                                                <input type="hidden" name="sub_reports[{{ $loop->parent->index }}][fields][{{ $loop->index }}][id]" value="{{ $subField->id }}">
                                                                 <div class="d-flex position-absolute top-0 start-1">
                                                                     <span class="drag-handle text-muted" style="cursor: move;">
                                                                         <i class="fas fa-grip-vertical"></i>
@@ -270,7 +273,7 @@
                                                                     <label class="form-label">Options untuk Select</label>
                                                                     <div class="select-options-container" id="optionsContainer-sub-field-{{ $subElIndex }}-{{ $loop->index }}">
                                                                         @if($subField->type === 'select' && $subField->options)
-                                                                            @foreach($subField->options as $optIndex => $option) 
+                                                                            @foreach($subField->options as $optIndex => $option)  
                                                                             <div class="row mb-2 select-option" id="option-sub-field-{{ $subElIndex }}-{{ $loop->parent->index }}-{{ $makeIndex }}">
                                                                                 <div class="col-md-4">
                                                                                     <input type="text" name="sub_reports[{{ $subElIndex }}][fields][{{ $loop->parent->index }}][options][{{ $makeIndex }}][value]" 
@@ -430,7 +433,8 @@ function addSubReport() {
     subFieldCounters[subReportId] = 0;
     
     const subReportHtml = `
-        <div class="sub-report-card" id="sub-report-${subReportId}">
+    <div class="sub-report-card" id="sub-report-${subReportId}">
+        <input type="hidden" name="sub_reports[${subReportId}][id]" value="0">
             <div class="sub-report-header">
                 <div class="row align-items-center">
                     <div class="col-md-4">
@@ -530,7 +534,9 @@ function createFieldHtml(fieldId, namePrefix, removeFunction, subReportId = null
     const removeCall = subReportId !== null ? `${removeFunction}(${fieldId}, ${subReportId})` : `${removeFunction}(${fieldId})`;
     
     return `
+
         <div class="position-relative field-item border rounded p-3 mb-3" id="${elementId}">
+            <input type="hidden" name="${elementId}[id]" value="0">
             <div class="d-flex position-absolute top-0 start-1">
                 <span class="drag-handle text-muted" style="cursor: move;">
                     <i class="fas fa-grip-vertical"></i>

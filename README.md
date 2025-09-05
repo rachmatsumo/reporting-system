@@ -24,3 +24,4 @@
 ![Template Report](screenshots/pic2.png)
 ![Menu](screenshots/pic3.png)
 ![Create Report Mobile View](screenshots/pic4.png)
+![New User](screenshots/pic5.png)

@@ -78,11 +78,29 @@ class ReportController
         try {
             DB::beginTransaction();
 
+            $data = $request->main_data ?? [];
+
+            // Cek apakah ada file di main_data
+            if ($request->hasFile('main_data')) {
+                foreach ($request->file('main_data') as $key => $file) {
+                    if ($file && $file->isValid()) {
+                        // Tentukan nama file unik
+                        $filename = time() . '_' . $key . '.' . $file->getClientOriginalExtension();
+
+                        // Simpan ke folder public/assets/uploads/reports
+                        $file->move(public_path('assets/uploads/reports'), $filename);
+
+                        // Simpan path relatif di database
+                        $data[$key] = 'assets/uploads/reports/' . $filename;
+                    }
+                }
+            }
+
             // Create main report
             $report = Report::create([
                 'report_design_id' => $reportDesign->id,
                 'title' => $request->title,
-                'data' => $request->main_data ?? [],
+                'data' => $data,
                 'status' => $request->status ?? 'draft',
                 'created_by' => Auth::id(),
             ]);
@@ -135,21 +153,39 @@ class ReportController
 
     public function update(Request $request, Report $report)
     {
-        // $this->validateReportData($request, $report->reportDesign);
-
         try {
             DB::beginTransaction();
 
+            // Data dasar report
+            $data = $request->main_data ?? [];
+
+            // Cek apakah ada file di main_data
+            if ($request->hasFile('main_data')) {
+                foreach ($request->file('main_data') as $key => $file) {
+                    if ($file && $file->isValid()) {
+                        // Tentukan nama file unik
+                        $filename = time() . '_' . $key . '.' . $file->getClientOriginalExtension();
+
+                        // Simpan ke folder public/assets/uploads/reports
+                        $file->move(public_path('assets/uploads/reports'), $filename);
+
+                        // Simpan path relatif di database
+                        $data[$key] = 'assets/uploads/reports/' . $filename;
+                    }
+                }
+            }
+
             // Update main report
             $report->update([
-                'title' => $request->title,
-                'data' => $request->main_data ?? [],
+                'title'  => $request->title,
+                'data'   => $data,
                 'status' => $request->status ?? 'draft',
             ]);
 
-            // Delete existing sub-data and recreate
+            // Hapus sub-data lama
             $report->subData()->delete();
-            
+
+            // Sub data termasuk file upload
             if ($request->has('sub_data')) {
                 $this->storeSubReportData($report, $request->sub_data);
             }
@@ -157,14 +193,14 @@ class ReportController
             DB::commit();
 
             return redirect()->route('reports.show', $report)
-                           ->with('success', 'Report berhasil diupdate!');
-
+                            ->with('success', 'Report berhasil diupdate!');
         } catch (\Exception $e) {
             DB::rollback();
             return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
                         ->withInput();
         }
     }
+
 
     public function destroy(Report $report)
     {
@@ -310,15 +346,36 @@ class ReportController
             foreach ($rows as $rowIndex => $rowData) {
                 if (empty($rowData) || !is_array($rowData)) continue;
 
+                $data = [];
+
+                foreach ($rowData as $key => $value) {
+                    // Jika field adalah file upload
+                    if ($value instanceof \Illuminate\Http\UploadedFile) {
+                        if ($value->isValid()) {
+                            $filename = time() . "_{$rowIndex}_{$key}." . $value->getClientOriginalExtension();
+
+                            // simpan ke public/assets/uploads/reports
+                            $value->move(public_path('assets/uploads/reports'), $filename);
+
+                            $data[$key] = "assets/uploads/reports/" . $filename;
+                        }
+                    } else {
+                        // Simpan field biasa
+                        $data[$key] = $value;
+                    }
+                }
+
+                // Simpan sub data ke DB
                 ReportSubData::create([
-                    'report_id' => $report->id,
+                    'report_id'            => $report->id,
                     'report_sub_design_id' => $subDesignId,
-                    'data' => $rowData,
-                    'row_index' => $rowIndex,
+                    'data'                 => $data,
+                    'row_index'            => $rowIndex,
                 ]);
             }
         }
     }
+
 
     /**
      * Export report to PDF/Excel

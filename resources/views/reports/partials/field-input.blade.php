@@ -13,9 +13,9 @@
         @break
         
     @case('textarea_rich')
-        <textarea name="{{ $name }}" class="{{ $inputClass }} rich-editor" rows="4" 
+        <textarea name="{{ $name }}" class="{{ $inputClass }} rich-editor richtext" rows="4" 
                   placeholder="{{ $field->default_value }}" {{ $required }}>{{ $value }}</textarea>
-        <small class="text-muted">Rich text editor akan aktif di sini</small>
+        {{-- <small class="text-muted">Rich text editor akan aktif di sini</small> --}}
         @break
         
     @case('select')
@@ -94,8 +94,37 @@
             @endforeach
         </select>
         @break
-        
+
     @case('map')
+        <div class="map-input-container">
+            <div class="border rounded p-3 bg-light text-center map-input" 
+                data-field="{{ $name }}" onclick="openMapSelector('{{ $name }}')">
+                @if($value)
+                    @php $coordinates = is_string($value) ? json_decode($value, true) : $value; @endphp
+                    @if(isset($coordinates['lat']) && isset($coordinates['lng']))
+                        <i class="fas fa-map-marker-alt text-success fa-2x mb-2"></i>
+                        <br>
+                        <small class="text-success">
+                            Location: {{ number_format($coordinates['lat'], 4) }}, {{ number_format($coordinates['lng'], 4) }}
+                        </small>
+                        <br>
+                        <small class="text-muted">Klik untuk mengubah lokasi</small>
+                    @else
+                        <i class="fas fa-map-marker-alt fa-2x text-muted mb-2"></i>
+                        <br>
+                        <small class="text-muted">Klik untuk pilih lokasi</small>
+                    @endif
+                @else
+                    <i class="fas fa-map-marker-alt fa-2x text-muted mb-2"></i>
+                    <br>
+                    <small class="text-muted">Klik untuk pilih lokasi</small>
+                @endif
+            </div>
+            <input type="hidden" name="{{ $name }}" class="map-coordinates" value="{{ $value }}">
+        </div>
+        @break
+        
+    {{-- @case('map')
         <div class="map-input-container">
             <div class="border rounded p-3 bg-light text-center map-input" 
                  data-field="{{ $name }}" onclick="openMapSelector('{{ $name }}')">
@@ -120,7 +149,7 @@
             </div>
             <input type="hidden" name="{{ $name }}" class="map-coordinates" value="{{ $value }}">
         </div>
-        @break
+        @break --}}
         
     @case('attendance')
         <div class="attendance-container">

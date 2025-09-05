@@ -48,8 +48,8 @@
             <p class="mb-0 text-secondary">
               Copyright © <script>
                 document.write(new Date().getFullYear())
-              </script> by 
-              <span style="color: #252f40" class="font-weight-bold ml-1">Operation Maintenance</span>.
+              </script> Reporting System by 
+              <span style="color: #252f40" class="font-weight-bold ml-1">Abdul Rachmat</span>.
             </p>
           </div>
         </div>

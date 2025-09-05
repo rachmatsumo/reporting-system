@@ -2,7 +2,7 @@
     @case('textarea')
     @case('textarea_rich')
         <div class="border rounded p-2 bg-light text-wrap ">
-            {!! nl2br(e($value)) !!}
+            {!! $value !!}
         </div>
         @break
         
@@ -28,10 +28,145 @@
             <span class="badge bg-secondary"><i class="fas fa-times"></i> Tidak</span>
         @endif
         @break
+
+    {{-- @case('map')
+        @if($value)
+            @php 
+                $coordinates = is_string($value) ? json_decode($value, true) : $value;
+            @endphp
+            @if(isset($coordinates['lat']) && isset($coordinates['lng']))
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                    <div>
+                        <strong>{{ number_format($coordinates['lat'], 6) }}, {{ number_format($coordinates['lng'], 6) }}</strong>
+                        <br>
+                        <small class="text-muted">
+                            <a href="https://www.google.com/maps?q={{ $coordinates['lat'] }},{{ $coordinates['lng'] }}" 
+                            target="_blank" class="text-decoration-none">
+                                <i class="fas fa-external-link-alt me-1"></i>Lihat di Google Maps
+                            </a>
+                        </small>
+                    </div>
+                </div>
+            @else
+                <span class="text-muted">Format koordinat tidak valid</span>
+            @endif
+        @else
+            <span class="text-muted">Lokasi tidak diset</span>
+        @endif
+        @break --}}
+
+    @case('map')
+        @if($value)
+            @php 
+                $coordinates = is_string($value) ? json_decode($value, true) : $value;
+                $mapId = 'map_' . uniqid();
+            @endphp
+            @if(isset($coordinates['lat']) && isset($coordinates['lng']))
+                <div class="map-display-container">
+                    <div id="{{ $mapId }}" style="height: 200px; width: 100%; border-radius: 8px; border: 1px solid #dee2e6;"></div>
+                    <div class="mt-2 d-flex flex-column">
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            {{ number_format($coordinates['lat'], 6) }}, {{ number_format($coordinates['lng'], 6) }}
+                        </small>
+                         <a href="https://www.google.com/maps?q={{ $coordinates['lat'] }},{{ $coordinates['lng'] }}" 
+                            target="_blank" class="text-decoration-none">
+                            <i class="fas fa-external-link-alt me-1"></i>Lihat di Google Maps
+                        </a>
+                        {{-- <a href="https://www.google.com/maps?q={{ $coordinates['lat'] }},{{ $coordinates['lng'] }}" 
+                        target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-external-link-alt me-1"></i>Google Maps
+                        </a> --}}
+                    </div>
+                </div>
+                
+                <script>
+                    (function() {
+                        function initMap{{ $mapId }}() {
+                            // Wait for container to be visible
+                            const container = document.getElementById('{{ $mapId }}');
+                            if (!container || container.offsetWidth === 0) {
+                                setTimeout(initMap{{ $mapId }}, 100);
+                                return;
+                            }
+                            
+                            // Initialize map
+                            var map{{ $mapId }} = L.map('{{ $mapId }}', {
+                                zoomControl: true,
+                                attributionControl: true
+                            }).setView([{{ $coordinates['lat'] }}, {{ $coordinates['lng'] }}], 15);
+                            
+                            // Add tile layer with error handling
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '© OpenStreetMap contributors',
+                                maxZoom: 19,
+                                subdomains: ['a', 'b', 'c']
+                            }).addTo(map{{ $mapId }});
+                            
+                            // Add marker
+                            L.marker([{{ $coordinates['lat'] }}, {{ $coordinates['lng'] }}])
+                                .addTo(map{{ $mapId }})
+                                .bindPopup('Lokasi: {{ number_format($coordinates['lat'], 6) }}, {{ number_format($coordinates['lng'], 6) }}');
+                            
+                            // Force map to resize and invalidate after a short delay
+                            setTimeout(function() {
+                                map{{ $mapId }}.invalidateSize();
+                            }, 100);
+                            
+                            // Disable interaction for display mode
+                            map{{ $mapId }}.dragging.disable();
+                            map{{ $mapId }}.touchZoom.disable();
+                            map{{ $mapId }}.doubleClickZoom.disable();
+                            map{{ $mapId }}.scrollWheelZoom.disable();
+                            map{{ $mapId }}.boxZoom.disable();
+                            map{{ $mapId }}.keyboard.disable();
+                            if (map{{ $mapId }}.tap) map{{ $mapId }}.tap.disable();
+                            
+                            // Add click to enable interaction
+                            container.addEventListener('click', function() {
+                                map{{ $mapId }}.dragging.enable();
+                                map{{ $mapId }}.touchZoom.enable();
+                                map{{ $mapId }}.doubleClickZoom.enable();
+                                map{{ $mapId }}.scrollWheelZoom.enable();
+                                map{{ $mapId }}.boxZoom.enable();
+                                map{{ $mapId }}.keyboard.enable();
+                                if (map{{ $mapId }}.tap) map{{ $mapId }}.tap.enable();
+                                
+                                // Invalidate size again when enabling interaction
+                                setTimeout(function() {
+                                    map{{ $mapId }}.invalidateSize();
+                                }, 50);
+                            });
+                        }
+                        
+                        // Initialize when DOM is ready
+                        if (document.readyState === 'loading') {
+                            document.addEventListener('DOMContentLoaded', initMap{{ $mapId }});
+                        } else {
+                            initMap{{ $mapId }}();
+                        }
+                    })();
+                </script>
+            @else
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Format koordinat tidak valid
+                </div>
+            @endif
+        @else
+            <div class="text-center p-3 border rounded bg-light">
+                <i class="fas fa-map-marker-alt fa-2x text-muted mb-2"></i>
+                <br>
+                <span class="text-muted">Lokasi tidak diset</span>
+            </div>
+        @endif
+        @break
+        
         
     @case('file')
         @if($value)
-            <a href="{{ Storage::url($value) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+            <a href="{{ asset($value) }}" target="_blank" class="btn btn-outline-primary btn-sm">
                 <i class="fas fa-download"></i> Download File
             </a>
         @else
@@ -42,10 +177,10 @@
     @case('image')
         @if($value)
             <div>
-                <img src="{{ Storage::url($value) }}" alt="Image" class="img-thumbnail" 
+                <img src="{{ asset($value) }}" alt="Image" class="img-thumbnail" 
                      style="max-width: {{ isset($compact) ? '100px' : '200px' }}; max-height: {{ isset($compact) ? '100px' : '200px' }};">
                 <br>
-                <a href="{{ Storage::url($value) }}" target="_blank" class="btn btn-outline-primary btn-sm mt-2">
+                <a href="{{ asset($value) }}" target="_blank" class="btn btn-outline-primary btn-sm mt-2">
                     <i class="fas fa-external-link-alt"></i> Lihat Penuh
                 </a>
             </div>

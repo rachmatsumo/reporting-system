@@ -1,6 +1,65 @@
+{{-- resources/views/reports/create.blade.php --}}
+
 @extends('layouts.user_type.auth')
  
 @section('content')
+
+<style>
+    .map-input {
+        cursor: pointer;
+        min-height: 60px;
+        transition: all 0.3s ease;
+    }
+
+    .map-input:hover {
+        background-color: #e3f2fd !important;
+        border-color: #2196f3 !important;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .sub-report-card {
+        border: 2px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    .sub-report-card:hover {
+        border-color: #007bff;
+        box-shadow: 0 4px 8px rgba(0,123,255,0.1);
+    }
+
+    .alert.position-fixed {
+        max-width: 300px;
+    }
+
+    .form-control-sm, .form-select-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    /* .map-input {
+        cursor: pointer;
+        min-height: 80px;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+    }
+
+    .map-input:hover {
+        background-color: #e3f2fd !important;
+        border-color: #2196f3 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    } */
+
+    #mapContainer {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+</style>
+
 <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg ">
 
     <div class="container-fluid">
@@ -174,6 +233,8 @@
 
     @include('reports.partials.modal-scripts', ['scripts' => $scripts ?? []])
 
+    @include('reports.partials.modal-map');
+
 </main>
 
 <script>
@@ -344,64 +405,65 @@ $(document).on('change', 'tbody[id^="attendanceTableBody-"] select, tbody[id^="a
 
 
 // Update createFieldInput function untuk attendance
-function createFieldInput(field, name, isTableCell = false) {
-    const inputClass = isTableCell ? 'form-control form-control-sm' : 'form-control';
-    const selectClass = isTableCell ? 'form-select form-select-sm' : 'form-select';
-    const required = field.required ? 'required' : '';
+// function createFieldInput(field, name, isTableCell = false) {
+//     const inputClass = isTableCell ? 'form-control form-control-sm' : 'form-control';
+//     const selectClass = isTableCell ? 'form-select form-select-sm' : 'form-select';
+//     const required = field.required ? 'required' : '';
     
-    switch (field.type) {
-        case 'attendance':
-            return `
-                <div class="attendance-container">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <label class="form-label mb-0">
-                            <i class="fas fa-users me-2"></i>Daftar Kehadiran
-                        </label>
-                        <button type="button" class="btn btn-primary btn-sm" onclick="addAttendanceRow('${name.replace(/[^a-zA-Z0-9]/g, '_')}', '${name}')">
-                            <i class="fas fa-plus"></i> Tambah Personnel
-                        </button>
-                    </div>
+//     switch (field.type) {
+//         case 'attendance':
+//             return `
+//                 <div class="attendance-container">
+//                     <div class="d-flex justify-content-between align-items-center mb-3">
+//                         <label class="form-label mb-0">
+//                             <i class="fas fa-users me-2"></i>Daftar Kehadiran
+//                         </label>
+//                         <button type="button" class="btn btn-primary btn-sm" onclick="addAttendanceRow('${name.replace(/[^a-zA-Z0-9]/g, '_')}', '${name}')">
+//                             <i class="fas fa-plus"></i> Tambah Personnel
+//                         </button>
+//                     </div>
                     
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th width="5%">#</th>
-                                    <th width="25%">Personnel</th>
-                                    <th width="20%">Status</th>
-                                    <th width="40%">Keterangan</th>
-                                    <th width="10%">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="attendanceTableBody-${name.replace(/[^a-zA-Z0-9]/g, '_')}" name="${name}">
-                                <!-- Rows akan ditambahkan via JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+//                     <div class="table-responsive">
+//                         <table class="table table-bordered">
+//                             <thead class="table-light">
+//                                 <tr>
+//                                     <th width="5%">#</th>
+//                                     <th width="25%">Personnel</th>
+//                                     <th width="20%">Status</th>
+//                                     <th width="40%">Keterangan</th>
+//                                     <th width="10%">Action</th>
+//                                 </tr>
+//                             </thead>
+//                             <tbody id="attendanceTableBody-${name.replace(/[^a-zA-Z0-9]/g, '_')}" name="${name}">
+//                                 <!-- Rows akan ditambahkan via JavaScript -->
+//                             </tbody>
+//                         </table>
+//                     </div>
                     
-                    <input type="hidden" name="${name}" class="attendance-summary" value="">
-                </div>
-            `;
+//                     <input type="hidden" name="${name}" class="attendance-summary" value="">
+//                 </div>
+//             `;
             
-        // ... rest of existing cases
-        case 'textarea':
-            return `<textarea name="${name}" class="${inputClass}" rows="${isTableCell ? '1' : '3'}" placeholder="${field.default_value}" ${required}></textarea>`;
+//         // ... rest of existing cases
+//         case 'textarea':
+//             return `<textarea name="${name}" class="${inputClass}" rows="${isTableCell ? '1' : '3'}" placeholder="${field.default_value}" ${required}></textarea>`;
         
-        case 'select':
-            let selectHtml = `<select name="${name}" class="${selectClass}" ${required}>`;
-            selectHtml += `<option value="">-- Pilih ${field.label} --</option>`;
-            if (field.options) {
-                field.options.forEach(option => {
-                    selectHtml += `<option value="${option.value}">${option.label}</option>`;
-                });
-            }
-            selectHtml += `</select>`;
-            return selectHtml;
+//         case 'select':
+//             let selectHtml = `<select name="${name}" class="${selectClass}" ${required}>`;
+//             selectHtml += `<option value="">-- Pilih ${field.label} --</option>`;
+//             if (field.options) {
+//                 field.options.forEach(option => {
+//                     selectHtml += `<option value="${option.value}">${option.label}</option>`;
+//                 });
+//             }
+//             selectHtml += `</select>`;
+//             return selectHtml;
             
-        default:
-            return `<input type="text" name="${name}" class="${inputClass}" placeholder="${field.default_value}" ${required}>`;
-    }
-}
+//         default:
+//             return `<input type="text" name="${name}" class="${inputClass}" placeholder="${field.default_value}" ${required}>`;
+//     }
+// }
+
 // Sub-report row counters
 const subReportCounters = {};
 @foreach($reportDesign->subDesigns as $subDesign)
@@ -503,6 +565,23 @@ function addFormCard(subDesignId, subDesign, rowIndex) {
     `;
     
     container.insertAdjacentHTML('beforeend', cardHtml);
+    initSummernote();
+}
+
+function initSummernote() {
+    $('.richtext:not([data-summernote-initialized])').each(function() {
+        $(this).summernote({
+            height: 200,
+            toolbar: [
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ]
+        }).attr('data-summernote-initialized', 'true');
+    });
 }
 
 function createFieldInput(field, name, isTableCell = false) {
@@ -511,11 +590,45 @@ function createFieldInput(field, name, isTableCell = false) {
     const required = field.required ? 'required' : '';
     
     switch (field.type) {
+
+        case 'attendance':
+            return `
+                <div class="attendance-container">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <label class="form-label mb-0">
+                            <i class="fas fa-users me-2"></i>Daftar Kehadiran
+                        </label>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="addAttendanceRow('${name.replace(/[^a-zA-Z0-9]/g, '_')}', '${name}')">
+                            <i class="fas fa-plus"></i> Tambah Personnel
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="5%">#</th>
+                                    <th width="25%">Personnel</th>
+                                    <th width="20%">Status</th>
+                                    <th width="40%">Keterangan</th>
+                                    <th width="10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTableBody-${name.replace(/[^a-zA-Z0-9]/g, '_')}" name="${name}">
+                                <!-- Rows akan ditambahkan via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <input type="hidden" name="${name}" class="attendance-summary" value="">
+                </div>
+            `;
+
         case 'textarea':
             return `<textarea name="${name}" class="${inputClass}" rows="${isTableCell ? '1' : '3'}" placeholder="${field.default_value}" ${required}></textarea>`;
         
         case 'textarea_rich':
-            return `<textarea name="${name}" class="${inputClass}" rows="4" placeholder="${field.default_value}" ${required}></textarea>`;
+            return `<textarea name="${name}" class="${inputClass} richtext" rows="4" placeholder="${field.default_value}" ${required}></textarea>`;
         
         case 'select':
             let selectHtml = `<select name="${name}" class="${selectClass}" ${required}>`;
@@ -569,12 +682,12 @@ function createFieldInput(field, name, isTableCell = false) {
         
         case 'map':
             return `
-                <div class="border rounded p-3 bg-light text-center map-input" data-field="${name}">
+                <div class="border rounded p-3 bg-light text-center map-input" data-field="${name}" onclick="openMapSelector('${name}')">
                     <i class="fas fa-map-marker-alt fa-2x text-muted mb-2"></i>
                     <br>
                     <small class="text-muted">Klik untuk pilih lokasi</small>
-                    <input type="hidden" name="${name}" class="map-coordinates">
                 </div>
+                <input type="hidden" name="${name}" class="map-coordinates">
             `;
         
         case 'attendance':
@@ -738,44 +851,149 @@ document.getElementById('reportForm').addEventListener('submit', function(e) {
         alert('Mohon lengkapi semua field yang wajib diisi');
     }
 });
+
+let currentMapField = '';
+let mapInstance = null;
+let currentMarker = null;
+
+function openMapSelector(fieldName) {
+    currentMapField = fieldName;
+    const modal = new bootstrap.Modal(document.getElementById('mapModal'));
+    modal.show();
+    
+    // Initialize map after modal is shown
+    setTimeout(() => {
+        initializeMap();
+    }, 300);
+}
+
+function initializeMap() {
+    if (mapInstance) {
+        mapInstance.remove();
+    }
+    
+    // Default to Jakarta coordinates
+    const defaultLat = -6.2088;
+    const defaultLng = 106.8456;
+    
+    mapInstance = L.map('mapContainer').setView([defaultLat, defaultLng], 11);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(mapInstance);
+    
+    // Add click event to map
+    mapInstance.on('click', function(e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        
+        // Remove existing marker
+        if (currentMarker) {
+            mapInstance.removeLayer(currentMarker);
+        }
+        
+        // Add new marker
+        currentMarker = L.marker([lat, lng]).addTo(mapInstance);
+        
+        // Update coordinates display
+        document.getElementById('selectedCoordinates').innerHTML = `
+            <i class="fas fa-map-marker-alt text-success me-2"></i>
+            <strong>Selected:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}
+        `;
+        
+        // Enable confirm button
+        document.getElementById('confirmLocation').disabled = false;
+    });
+    
+    // Load existing coordinates if available
+    const existingValue = document.querySelector(`[name="${currentMapField}"]`).value;
+    if (existingValue) {
+        try {
+            const coordinates = JSON.parse(existingValue);
+            if (coordinates.lat && coordinates.lng) {
+                const lat = parseFloat(coordinates.lat);
+                const lng = parseFloat(coordinates.lng);
+                mapInstance.setView([lat, lng], 15);
+                currentMarker = L.marker([lat, lng]).addTo(mapInstance);
+                document.getElementById('selectedCoordinates').innerHTML = `
+                    <i class="fas fa-map-marker-alt text-success me-2"></i>
+                    <strong>Current:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}
+                `;
+                document.getElementById('confirmLocation').disabled = false;
+            }
+        } catch (e) {
+            console.log('Invalid coordinates format');
+        }
+    }
+}
+
+function confirmMapSelection() {
+    if (currentMarker) {
+        const lat = currentMarker.getLatLng().lat;
+        const lng = currentMarker.getLatLng().lng;
+        
+        // Update hidden input
+        const hiddenInput = document.querySelector(`[name="${currentMapField}"]`);
+        hiddenInput.value = JSON.stringify({lat: lat, lng: lng});
+        
+        // Update UI
+        const mapPreview = document.querySelector(`[data-field="${currentMapField}"]`);
+        mapPreview.innerHTML = `
+            <i class="fas fa-map-marker-alt text-success fa-2x mb-2"></i>
+            <br>
+            <small class="text-success">
+                Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}
+            </small>
+            <br>
+            <small class="text-muted">Click to change location</small>
+        `;
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('mapModal'));
+        modal.hide();
+    }
+}
+
+function getCurrentLocation() {
+    if (navigator.geolocation) {
+        document.getElementById('getCurrentLocation').innerHTML = `
+            <i class="fas fa-spinner fa-spin me-2"></i>Getting location...
+        `;
+        
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                mapInstance.setView([lat, lng], 15);
+                
+                if (currentMarker) {
+                    mapInstance.removeLayer(currentMarker);
+                }
+                
+                currentMarker = L.marker([lat, lng]).addTo(mapInstance);
+                
+                document.getElementById('selectedCoordinates').innerHTML = `
+                    <i class="fas fa-map-marker-alt text-success me-2"></i>
+                    <strong>Current Location:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}
+                `;
+                
+                document.getElementById('confirmLocation').disabled = false;
+                document.getElementById('getCurrentLocation').innerHTML = `
+                    <i class="fas fa-crosshairs me-2"></i>Use Current Location
+                `;
+            },
+            function(error) {
+                alert('Unable to get your location. Please select manually on the map.');
+                document.getElementById('getCurrentLocation').innerHTML = `
+                    <i class="fas fa-crosshairs me-2"></i>Use Current Location
+                `;
+            }
+        );
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
+}
 </script>
-
-<style>
-.map-input {
-    cursor: pointer;
-    min-height: 60px;
-    transition: all 0.3s ease;
-}
-
-.map-input:hover {
-    background-color: #e3f2fd !important;
-    border-color: #2196f3 !important;
-}
-
-.table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-
-.sub-report-card {
-    border: 2px solid #dee2e6;
-    transition: all 0.3s ease;
-}
-
-.sub-report-card:hover {
-    border-color: #007bff;
-    box-shadow: 0 4px 8px rgba(0,123,255,0.1);
-}
-
-.alert.position-fixed {
-    max-width: 300px;
-}
-
-.form-control-sm, .form-select-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-}
-</style>
 
 @endsection

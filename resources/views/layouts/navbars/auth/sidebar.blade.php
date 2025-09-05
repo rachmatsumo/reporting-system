@@ -6,7 +6,7 @@
         {{-- <img src="../assets/img/logo-ct.png" class="navbar-brand-img h-100" alt="..."> --}}
         <img src="{{ asset('assets/img/icon.png') }}" class="navbar-brand-img h-100" alt="Logo"> 
         {{-- <i class="fs-3 fa fa-gear"></i> --}}
-        <span class="ms-2 font-weight-bold">Ops Main Dash</span>
+        <span class="ms-2 font-weight-bold">Reporting System</span>
     </a>
   </div>
   <hr class="horizontal dark mt-0">
@@ -18,7 +18,7 @@
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i class="fa fa-plane-departure ps-2 pe-2 text-center text-dark {{ (Request::is('dashboard') ? 'text-white' : 'text-dark') }} "></i>
           </div>
-          <span class="nav-link-text ms-1">Airside & Visual Aid</span>
+          <span class="nav-link-text ms-1">Dashboard</span>
         </a>
       </li>
 

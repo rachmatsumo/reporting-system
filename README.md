@@ -16,3 +16,11 @@
     <li>Jalankan migrasi database: <code>php artisan migrate</code></li> 
     <li>Jalankan server: <code>php artisan serve</code></li>
 </ol>
+
+<h2>📄 Lisensi</h2>
+<p>Proyek ini dilisensikan di bawah <a href="LICENSE">MIT License</a>.</p>
+
+![Create Report](screenshots/pic1.png)
+![Template Report](screenshots/pic2.png)
+![Menu](screenshots/pic3.png)
+![Create Report Mobile View](screenshots/pic4.png)

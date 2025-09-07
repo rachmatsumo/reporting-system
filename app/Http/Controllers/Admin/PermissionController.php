@@ -12,7 +12,7 @@ class PermissionController extends Controller
     public function index()
     {
         $this->authorize('permission.view');
-        $permissions = Permission::all();
+        $permissions = Permission::orderBy('name')->paginate(10);
         return view('admin.permissions.index', compact('permissions'));
     }
 

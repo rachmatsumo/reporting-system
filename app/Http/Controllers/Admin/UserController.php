@@ -15,7 +15,7 @@ class UserController extends Controller
     {
         $this->authorize('user.view');
         
-        $users = User::with('roles')->get();
+        $users = User::with('roles')->paginate(10);
         return view('admin.users.index', compact('users'));
     }
 

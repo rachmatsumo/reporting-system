@@ -8,6 +8,7 @@
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
+                    <th>No</th>
                     <th>Nama</th>
                     <th>Gender</th>
                     <th>Email</th>
@@ -19,6 +20,7 @@
             <tbody>
                 @foreach($users as $user)
                 <tr>
+                    <td>{{ $users->firstItem() + $loop->index  }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->gender_label }}</td>
                     <td>{{ $user->email }}</td>
@@ -35,6 +37,9 @@
                 @endforeach
             </tbody>
         </table>
+        <div class="mt-3">
+            {{ $users->links() }}
+        </div>
     </div>
 </div>
 @endsection

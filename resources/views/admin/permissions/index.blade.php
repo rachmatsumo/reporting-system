@@ -8,13 +8,15 @@
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
+                    <th>No</th>
                     <th>Nama Permission</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody> 
                 @foreach($permissions as $permission)
                 <tr>
+                    <td>{{ $permissions->firstItem() + $loop->index }}</td>
                     <td>{{ $permission->name }}</td>
                     <td> 
                         <x-action-dropdown :model="$permission" :show="['edit', 'delete']"/>
@@ -23,6 +25,9 @@
                 @endforeach
             </tbody>
         </table>
+        <div class="mt-3">
+            {{ $permissions->links() }}
+        </div>
     </div>
 </div>
 @endsection

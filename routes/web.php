@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
         ->name('profile.update-password');
     Route::resource('profile', ProfileController::class)->only('show', 'edit', 'update');
 
-    Route::resource('users', UserController::class)->only('index', 'create', 'show', 'edit', 'update');
+    Route::resource('users', UserController::class)->only('index', 'create', 'store', 'show', 'edit', 'update');
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
     Route::resource('menus', MenuController::class); 

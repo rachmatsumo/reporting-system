@@ -38,9 +38,7 @@
     <li>Salin file <code>.env.example</code> menjadi <code>.env</code></li>
     <li>Set konfigurasi environment di file <code>.env</code></li>
     <li>Generate app key: <code>php artisan key:generate</code></li>
-    <li>Buat symbolic link: <code>php artisan storage:link</code></li>
-    <li>Jalankan: <code>npm install</code></li>
-    <li>Jalankan: <code>npm run build</code></li>
+    <li>Buat symbolic link: <code>php artisan storage:link</code></li> 
     <li>Jalankan migrasi dan seeder database: <code>php artisan migrate --seed</code></li> 
     <li>Jalankan server: <code>php artisan serve</code></li>
 </ol>

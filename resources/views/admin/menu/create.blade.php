@@ -26,15 +26,22 @@
             <label class="block font-semibold">Route</label>
             <input type="text" class="form-control" name="route" value="{{ old('route') }}" class="border p-2 w-full">
         </div>
+        
         <div class="mb-2">
             <label class="block font-semibold">Permission</label>
-            <input type="text" class="form-control" name="permission" value="{{ old('permission') }}" class="border p-2 w-full">
+            <select class="form-select" name="permission">
+                <option value="">--Select permisson--</option>
+                @foreach($permissions as $a)
+                    <option value="{{ $a->name }}" {{ $a->name === old('permission') ? 'selected' : '' }}>{{ $a->name }}</option>
+                @endforeach
+            </select> 
             @error('permission') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
-        <div class="mb-2">
-            <label class="block font-semibold">Icon</label>
-            <input type="text" class="form-control" name="icon" value="{{ old('icon') }}" class="border p-2 w-full">
-        </div>
+
+        @include('admin.menu.partials.icons', [
+            'selectedIcon' => old('icon')
+        ])
+
         <div class="mb-2">
             <label class="block font-semibold">Order</label>
             <input type="number" class="form-control" name="order" value="{{ old('order') }}" class="border p-2 w-full" value="0">

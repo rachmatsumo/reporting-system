@@ -5,7 +5,7 @@
     <x-page-header route-prefix="permissions" mode="index" />
 
     <div class="table-responsive">
-        <table class="table">
+        <table class="table table-striped table-hover">
             <thead>
                 <tr>
                     <th>Nama Permission</th>
@@ -17,7 +17,7 @@
                 <tr>
                     <td>{{ $permission->name }}</td>
                     <td> 
-                        <x-action-inline :model="$permission" :show="['edit', 'delete']"/>
+                        <x-action-dropdown :model="$permission" :show="['edit', 'delete']"/>
                     </td>
                 </tr>
                 @endforeach

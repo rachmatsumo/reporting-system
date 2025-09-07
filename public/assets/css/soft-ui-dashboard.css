@@ -23146,3 +23146,25 @@ pre[class*=language-] {
     overflow: auto !important;
   }
 }
+
+/* CUSTOM */
+#sidenav-collapse-main .navbar-nav .nav-item .nav-link.active .icon i {
+    color: white ;
+} 
+#sidenav-collapse-main .nav-link{
+    border-radius : 10px;
+}
+#sidenav-collapse-main .nav-link:hover {
+    /* background: #f3f3f3ff;
+    color: #2b2b2bff; */
+    background: var(--bs-primary);;
+    color: #ffffff;
+}
+
+#sidenav-collapse-main .nav-link:hover .icon {
+    background: #ffffff; /* icon jadi putih */
+}
+
+#sidenav-collapse-main .nav-link:hover .icon i{
+    color: var(--bs-primary)!important; /* icon jadi putih */
+}

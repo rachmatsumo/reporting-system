@@ -17,12 +17,6 @@
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
 
-    <style>  
-        #sidenav-collapse-main .navbar-nav .nav-item .nav-link.active .icon i {
-            color: white !important;
-        } 
-    </style> 
-
     @stack('styles')
 </head>
 <body class="g-sidenav-show  bg-gray-100 {{ (\Request::is('rtl') ? 'rtl' : (Request::is('virtual-reality') ? 'virtual-reality' : '')) }} ">

@@ -5,13 +5,14 @@
     <x-page-header route-prefix="menus" mode="index" />
  
     <div class="table-responsive">
-        <table class="table table-sm mb-0">
+        <table class="table table-striped table-hover mb-0">
             <thead class="table-light">
                 <tr>
                     <th width="10%">Order</th>
                     <th>Title</th>
                     <th>Route</th>
                     <th>Permission</th>
+                    <th>Icon</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -23,6 +24,7 @@
                         <td>{{ $menu->title }}</td>
                         <td>{{ $menu->route }}</td>
                         <td>{{ $menu->permission }}</td>
+                        <td><i class="bi bi-{{ $menu->icon }}"></i></td>
                         <td>
                             <x-action-dropdown :model="$menu" :show="['edit', 'delete']"/>
                         </td>
@@ -35,6 +37,7 @@
                             <td>{{ $child->title }}</td>
                             <td>{{ $child->route }}</td>
                             <td>{{ $child->permission }}</td>
+                            <td><i class="bi bi-{{ $child->icon }}"></i></td>
                             <td>
                                 <x-action-dropdown :model="$child" :show="['edit', 'delete']"/>
                             </td>
@@ -47,6 +50,7 @@
                                 <td>{{ $subchild->title }}</td>
                                 <td>{{ $subchild->route }}</td>
                                 <td>{{ $subchild->permission }}</td>
+                                <td><i class="bi bi-{{ $subchild->icon }}"></i></td>
                                 <td>
                                     <x-action-dropdown :model="$subchild" :show="['edit', 'delete']"/>
                                 </td>

@@ -28,7 +28,8 @@
     },
     "autoload": {
         "files": [
-            "app/Helpers/SidebarMenu.php"
+            "app/Helpers/SidebarMenu.php",
+            "app/Helpers/helpers.php"
         ],
         "psr-4": {
             "App\\": "app/",

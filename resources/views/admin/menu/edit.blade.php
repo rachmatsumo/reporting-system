@@ -9,7 +9,7 @@
         @method('PUT')
 
         <div class="mb-2">
-            <label class="block font-semibold">Title</label>
+            <label class="block font-semibold">Title <span class="text-danger text-end">*</span></label>
             <input type="text" class="form-control" name="title" value="{{ old('title', $menu->title) }}" class="border p-2 w-full" required>
             @error('title') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
@@ -35,15 +35,19 @@
 
         <div class="mb-2">
             <label class="block font-semibold">Permission</label>
-            <input type="text" class="form-control" name="permission" value="{{ old('permission', $menu->permission) }}" class="border p-2 w-full">
+            <select class="form-select" name="permission">
+                <option value="">--Select permisson--</option>
+                @foreach($permissions as $a)
+                    <option value="{{ $a->name }}" {{ $a->name === old('permission', $menu->permission) ? 'selected' : '' }}>{{ $a->name }}</option>
+                @endforeach
+            </select> 
             @error('permission') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
 
-        <div class="mb-2">
-            <label class="block font-semibold">Icon</label>
-            <input type="text" class="form-control" name="icon" value="{{ old('icon', $menu->icon) }}" class="border p-2 w-full">
-            @error('icon') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
-        </div>
+        @include('admin.menu.partials.icons', [
+            'selectedIcon' => old('icon', $menu->icon)
+        ])
+
 
         <div class="mb-2">
             <label class="block font-semibold">Order</label>
@@ -53,5 +57,5 @@
  
         <x-form-buttons route-prefix="menus" mode="edit" />
     </form>
-</div>
+</div> 
 @endsection

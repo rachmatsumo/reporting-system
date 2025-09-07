@@ -43,7 +43,8 @@ class MenuController extends Controller
     {
         $this->authorize('menu.create');
         $parents = Menu::pluck('title','id');
-        return view('admin.menu.create', compact('parents'));
+        $permissions = Permission::orderBy('name')->get();
+        return view('admin.menu.create', compact('parents', 'permissions'));
     }
 
     public function store(Request $request)
@@ -68,7 +69,8 @@ class MenuController extends Controller
     {
         $this->authorize('menu.edit');
         $parents = Menu::where('id','!=',$menu->id)->pluck('title','id');
-        return view('admin.menu.edit', compact('menu','parents'));
+        $permissions = Permission::orderBy('name')->get();
+        return view('admin.menu.edit', compact('menu','parents', 'permissions'));
     }
 
     public function update(Request $request, Menu $menu)

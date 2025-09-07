@@ -62,5 +62,5 @@
 
 ![Manage Menu](screenshots/pic1.png)
 ![Profile](screenshots/pic2.png)
-![Edit Role](screenshots/pic3.png)
+![Edit Role](screenshots/pic3a.png)
 ![Add New Menu](screenshots/pic4.png) 

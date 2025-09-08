@@ -18,7 +18,10 @@ class RolePermissionSeeder extends Seeder
             'user.view', 'user.create', 'user.edit',
             'menu.view', 'menu.create', 'menu.edit', 'menu.delete',
             'permission.view', 'permission.create', 'permission.edit', 'permission.delete',
-            'role.view', 'role.create', 'role.edit', 'role.delete'
+            'role.view', 'role.create', 'role.edit', 'role.delete',
+            'report.view', 'report.create', 'report.edit', 'report.delete',
+            'report-design.view', 'report-design.create', 'report-design.edit', 'report-design.delete',
+            'custom-script.view', 'custom-script.create', 'custom-script.edit', 'custom-script.delete'
         ];
 
         foreach ($permissions as $perm) {
@@ -26,10 +29,19 @@ class RolePermissionSeeder extends Seeder
         }
 
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $userRole = Role::firstOrCreate(['name' => 'user']);
+        $supervisorRole = Role::firstOrCreate(['name' => 'supervisor']);
+        $officerRole = Role::firstOrCreate(['name' => 'officer']);
 
         $adminRole->givePermissionTo(Permission::all());
-        $userRole->givePermissionTo(['dashboard.view']);
+        
+        $supervisorRole->givePermissionTo(['dashboard.view', 
+                                           'user.view', 'user.create', 'user.edit',
+                                           'report.view', 'report.create', 'report.edit', 'report.delete',
+                                           'report-design.view', 'report-design.create', 'report-design.edit', 'report-design.delete',
+                                           'custom-script.view', 'report-design.create', 'report-design.edit', 'custom-script.delete'
+                                        ]);
+                                        
+        $officerRole->givePermissionTo(['dashboard.view', 'report.view', 'report.create', 'report.edit', 'report.delete',]);
 
         $adminUser = User::firstOrCreate(
             ['email' => 'admin@local.com'],
@@ -39,15 +51,24 @@ class RolePermissionSeeder extends Seeder
             ]
         );
 
-        $userUser = User::firstOrCreate(
-            ['email' => 'user@local.com'],
+        $supervisorUser = User::firstOrCreate(
+            ['email' => 'supervisor@local.com'],
             [
                 'name' => 'John Doe',
                 'password' => Hash::make('password123'),
             ]
         );
+    
+        $officerUser = User::firstOrCreate(
+            ['email' => 'officer@local.com'],
+            [
+                'name' => 'Anne Lucene',
+                'password' => Hash::make('password123'),
+            ]
+        );
 
         $adminUser->assignRole($adminRole);
-        $userUser->assignRole($userRole);
+        $supervisorUser->assignRole($supervisorRole);
+        $officerUser->assignRole($officerRole);
     }
 }

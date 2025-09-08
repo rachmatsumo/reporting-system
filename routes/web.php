@@ -7,7 +7,9 @@ use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\ActivityLogController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Admin\CustomScriptController;
+use App\Http\Controllers\Admin\ReportDesignController;
+use App\Http\Controllers\Admin\ReportController; 
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -31,6 +33,26 @@ Route::middleware('auth')->group(function () {
     Route::resource('menus', MenuController::class); 
     Route::resource('reports', ReportController::class); 
     Route::resource('activity-log', ActivityLogController::class)->only('index'); 
+
+    // Reports Routes
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/create', [ReportController::class, 'create'])->name('reports.create');
+    Route::get('reports/create/{reportDesign}', [ReportController::class, 'createFromDesign'])->name('reports.create-from-design');
+    Route::post('reports', [ReportController::class, 'store'])->name('reports.store');
+    Route::get('reports/{report}', [ReportController::class, 'show'])->name('reports.show');
+    Route::get('reports/{report}/edit', [ReportController::class, 'edit'])->name('reports.edit');
+    Route::put('reports/{report}', [ReportController::class, 'update'])->name('reports.update');
+    Route::delete('reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
+    Route::post('reports/bulk-action', [ReportController::class, 'bulkAction'])->name('reports.bulk-action');
+    Route::get('reports/export/{report}/{type}', [ReportController::class, 'export'])->name('reports.export');
+	
+	Route::get('report-designs/{reportDesign}/clone', [ReportDesignController::class, 'clone'])
+         ->name('report-designs.clone'); 
+
+	Route::resource('report-designs', ReportDesignController::class)->only(['index', 'show', 'edit', 'update', 'create', 'store', 'destroy']);
+	 
+	Route::post('custom-scripts/run-script', [CustomScriptController::class, 'run'])->name('custom-scripts.run');
+	Route::resource('custom-scripts', CustomScriptController::class)->only(['index', 'edit', 'update', 'create', 'store', 'destroy']);
 });
  
 require __DIR__.'/auth.php';

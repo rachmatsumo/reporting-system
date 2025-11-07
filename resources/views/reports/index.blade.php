@@ -6,9 +6,9 @@
     <x-page-header route-prefix="reports" mode="index" />
                         
     <!-- Filters -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <select class="form-select" id="filterDesign" name="report_design_id">
+    <div class="row mb-2">
+        <div class="col-md-3 mb-2">
+            <select class="form-select form-select-sm" id="filterDesign" name="report_design_id">
                 <option value="">All Report</option>
                 @foreach($reportDesigns ?? [] as $design)
                     <option value="{{ $design->id }}" 
@@ -19,8 +19,8 @@
             </select>
         </div>
 
-        <div class="col-md-2">
-            <select class="form-select" id="filterStatus">
+        <div class="col-md-2 mb-2">
+            <select class="form-select form-select-sm" id="filterStatus">
                 <option value="">Semua Status</option>
                 <option value="draft"     {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                 <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Submitted</option>
@@ -29,27 +29,56 @@
             </select>
         </div>
 
-        <div class="col-md-2">
-            <input type="date" class="form-control" id="filterDateFrom" 
+        <div class="col-md-2 mb-2">
+            <input type="date" class="form-control form-control-sm" id="filterDateFrom" 
                 value="{{ request('date_from') }}" placeholder="Dari Tanggal">
         </div>
 
-        <div class="col-md-2">
-            <input type="date" class="form-control" id="filterDateTo" 
+        <div class="col-md-2 mb-2">
+            <input type="date" class="form-control form-control-sm" id="filterDateTo" 
                 value="{{ request('date_to') }}" placeholder="Sampai Tanggal">
         </div>
 
         <div class="col-md-3">
-            <button type="button" class="btn btn-outline-primary" onclick="applyFilters()">
+            <button type="button" class="btn btn-sm btn-outline-primary mb-2" onclick="applyFilters()">
                 <i class="bi bi-search"></i> Filter
             </button>
-            <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">
+            <button type="button" class="btn btn-sm btn-outline-secondary mb-2" onclick="resetFilters()">
                 <i class="bi bi-arrow-counterclockwise"></i> Reset
+            </button> 
+            <button type="button" class="btn btn-sm btn-success mb-2"
+                onclick="window.location.href='{{ route('reports.export.list', request()->query()) }}'">
+                <i class="bi bi-file-earmark-excel"></i> Excel
             </button>
+
         </div>
+    </div>
+    <div class="row mb-4">
+
+        {{-- Search --}}
+        <div class="col-md-3 mb-2">
+            <input type="text" class="form-control form-control-sm" 
+                id="filterSearch"
+                placeholder="Cari report..."
+                value="{{ request('search') }}">
+        </div>
+
+        {{-- Per Page --}}
+        <div class="col-md-2 mb-2">
+            <select class="form-select form-select-sm" id="filterPerPage">
+                @foreach([10, 20, 50, 100, 500, 1000, 'Tampilkan semua'] as $size)
+                    <option value="{{ $size }}" 
+                        {{ request('per_page', 10) == $size ? 'selected' : '' }}>
+                        {{ $size }} {{ $size!=='Tampilkan semua' ? 'Per halaman' : '' }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
     </div>
 
     @if($reports->count() > 0)
+
         <!-- Reports Table -->
         <div class="table-responsive" style="height: 300px; overflow-y: auto;">
             <table class="table table-striped table-hover">
@@ -124,7 +153,11 @@
                             <small class="text-muted">{{ $report->created_at->format('H:i') }}</small>
                         </td>
                         <td>
-                            <x-action-dropdown :model="$report" :show="['view', 'edit', 'delete']"/>
+                            @if($report->status === 'approved' || $report->status === 'submitted')
+                                <x-action-dropdown :model="$report" :show="['view']"/>
+                            @else
+                                <x-action-dropdown :model="$report" :show="['view', 'edit', 'delete']"/>
+                            @endif
                         </td>
                     </tr>
                     @endforeach
@@ -150,9 +183,9 @@
             </div>
             
             <!-- Pagination -->
-            <div>
+            @if($reports instanceof \Illuminate\Pagination\LengthAwarePaginator)
                 {{ $reports->links() }}
-            </div>
+            @endif
         </div>
     @else
         <div class="text-center py-5">
@@ -271,12 +304,16 @@
         const status = document.getElementById('filterStatus').value;
         const dateFrom = document.getElementById('filterDateFrom').value;
         const dateTo = document.getElementById('filterDateTo').value;
+        const search = document.getElementById('filterSearch').value;
+        const perPage = document.getElementById('filterPerPage').value;
         
         const params = new URLSearchParams();
         if (design) params.append('report_design_id', design);
         if (status) params.append('status', status);
         if (dateFrom) params.append('date_from', dateFrom);
         if (dateTo) params.append('date_to', dateTo);
+        if (search) params.append('search', search);
+        if (perPage) params.append('per_page', perPage);
         
         window.location.href = '{{ route("reports.index") }}?' + params.toString();
     }

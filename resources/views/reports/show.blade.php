@@ -35,23 +35,24 @@
             <!-- Action Buttons -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    @if($report->status === 'draft' || Auth::user()->can('edit-reports'))
-                        <a href="{{ route('reports.edit', $report) }}" class="btn btn-primary">
+                    @if($report->status === 'draft' || $report->status ==='rejected' || Auth::user()->can('edit-reports'))
+                        <a href="{{ route('reports.edit', $report) }}" class="btn btn-primary btn-sm">
                             <i class="bi bi-pencil"></i> Edit
                         </a>
                     @endif
-                    <button class="btn btn-outline-primary" onclick="window.print()">
+                    <button class="btn btn-outline-primary btn-sm" onclick="window.print()">
                         <i class="bi bi-printer"></i> Print
                     </button>
                 </div>
-                <div>
-                    {{-- <a href="{{ route('reports.export', [$report, 'pdf']) }}" class="btn btn-outline-danger btn-sm">
-                        <i class="bi bi-file-earmark-pdf"></i> PDF
+                <div> 
+                    <a href="{{ route('reports.export.pdf', $report->id) }}" 
+                        class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-file-earmark-pdf"></i> PDF
                     </a>
-                    <a href="{{ route('reports.export', [$report, 'excel']) }}" class="btn btn-outline-success btn-sm">
+                    {{-- <a href="{{ route('reports.export', [$report, 'excel']) }}" class="btn btn-outline-success btn-sm">
                         <i class="bi bi-file-earmark-excel"></i> Excel
-                    </a>
-                    <a href="{{ route('reports.index') }}" class="btn btn-secondary btn-sm">
+                    </a> --}}
+                    {{-- <a href="{{ route('reports.index') }}" class="btn btn-secondary btn-sm">
                         <i class="bi bi-arrow-left"></i> Kembali
                     </a> --}}
                 </div>
@@ -177,7 +178,7 @@
                                     <!-- Card Display -->
                                     <div class="row">
                                         @foreach($subDataItems->sortBy('row_index') as $subData)
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-12 mb-3">
                                             <div class="card">
                                                 <div class="card-header">
                                                     <h6 class="mb-0">{{ $subDesign->name }} #{{ $subData->row_index + 1 }}</h6>

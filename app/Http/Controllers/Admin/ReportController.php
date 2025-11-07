@@ -10,19 +10,24 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\CustomScript;
+use App\Exports\ReportListExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 class ReportController
 {
     public function index(Request $request)
     {
         $reportDesigns = ReportDesign::where('is_active', true)
-                                   ->orderBy('name')
-                                   ->get();
+            ->orderBy('name')
+            ->get();
 
         $status = $request->input('status');
         $start = $request->input('date_from');
         $end = $request->input('date_to');
         $reportDesignId = $request->input('report_design_id');
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
 
         $query = Report::with(['reportDesign', 'creator'])->latest();
 
@@ -42,10 +47,31 @@ class ReportController
             $query->where('status', $status);
         }
 
-        $reports = $query->paginate(15);
+        //  SEARCH: Cari di title, creator name, atau report design name
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'LIKE', "%$search%")
+                ->orWhereHas('creator', function($cq) use ($search) {
+                    $cq->where('name', 'LIKE', "%$search%");
+                })
+                ->orWhereHas('reportDesign', function($dq) use ($search) {
+                    $dq->where('name', 'LIKE', "%$search%");
+                });
+            });
+        }
+ 
+        if ($perPage === 'Tampilkan semua') {
+            //  Ambil semua data, tidak dipaginate
+            $reports = $query->get();
+        } else {
+            //  Paginate normal
+            $reports = $query->paginate((int) $perPage)->appends($request->query());
+        }
 
-        return view('reports.index', compact('reports', 'start', 'end', 'reportDesignId', 'reportDesigns'));
-    }
+        return view('reports.index', compact(
+            'reports', 'start', 'end', 'reportDesignId', 'reportDesigns'
+        ));
+    } 
 
     public function create()
     {
@@ -68,8 +94,7 @@ class ReportController
     }
 
     public function store(Request $request)
-    {
-        // dd($request->main_data);
+    { 
         $reportDesign = ReportDesign::findOrFail($request->report_design_id);
         
         // Validate main fields
@@ -156,52 +181,92 @@ class ReportController
         try {
             DB::beginTransaction();
 
-            // Data dasar report
-            $data = $request->main_data ?? [];
+            // Ambil data lama (untuk fallback)
+            $oldData = $report->data ?? [];
 
-            // Cek apakah ada file di main_data
-            if ($request->hasFile('main_data')) {
-                foreach ($request->file('main_data') as $key => $file) {
-                    if ($file && $file->isValid()) {
-                        // Tentukan nama file unik
-                        $filename = time() . '_' . $key . '.' . $file->getClientOriginalExtension();
+            $data = [];
 
-                        // Simpan ke folder public/assets/uploads/reports
-                        $file->move(public_path('assets/uploads/reports'), $filename);
+            /**
+             * ======================================
+             * 1. PROSES MAIN DATA
+             * ======================================
+             */
+            if ($request->has('main_data')) {
+                foreach ($request->main_data as $key => $value) {
 
-                        // Simpan path relatif di database
-                        $data[$key] = 'assets/uploads/reports/' . $filename;
+                    // Jika field ini berupa file upload
+                    if ($request->hasFile("main_data.$key")) {
+
+                        $file = $request->file("main_data.$key");
+
+                        if ($file && $file->isValid()) {
+                            $filename = time() . "_{$key}." . $file->getClientOriginalExtension();
+                            $file->move(public_path('assets/uploads/reports'), $filename);
+
+                            $data[$key] = 'assets/uploads/reports/' . $filename;
+                        }
+
+                    }
+                    // Jika tidak upload file → gunakan old value
+                    else if ($request->has("main_data_{$key}_old")) {
+
+                        $data[$key] = $request->input("main_data_{$key}_old"); 
+                    }
+                    // Jika bukan file → simpan value baru (text, number, signature, map, dll)
+                    else {
+                        $data[$key] = $value;
                     }
                 }
             }
 
-            // Update main report
+            // Jika ada field lama yang tidak dikirim (karena form tidak render)
+            // Tambahkan fallback agar tidak hilang
+            foreach ($oldData as $key => $val) {
+                if (!array_key_exists($key, $data)) {
+                    $data[$key] = $val;
+                }
+            }
+
+
+            /**
+             * ======================================
+             * 2. UPDATE MAIN REPORT
+             * ======================================
+             */
             $report->update([
                 'title'  => $request->title,
                 'data'   => $data,
-                'status' => $request->status ?? 'draft',
+                'status' => $request->action ?? 'draft',
             ]);
 
-            // Hapus sub-data lama
+
+            /**
+             * ======================================
+             * 3. PROSES SUB DATA
+             * ======================================
+             */
             $report->subData()->delete();
 
-            // Sub data termasuk file upload
             if ($request->has('sub_data')) {
                 $this->storeSubReportData($report, $request->sub_data);
             }
 
             DB::commit();
 
-            return redirect()->route('reports.show', $report)
-                            ->with('success', 'Report berhasil diupdate!');
+            return redirect()
+                ->route('reports.show', $report)
+                ->with('success', 'Report berhasil diupdate!');
+
         } catch (\Exception $e) {
-            DB::rollback();
-            return back()->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
-                        ->withInput();
+
+            DB::rollBack();
+
+            return back()
+                ->withErrors(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])
+                ->withInput();
         }
     }
-
-
+ 
     public function destroy(Report $report)
     {
         try {
@@ -374,48 +439,77 @@ class ReportController
                 ]);
             }
         }
-    }
+    } 
 
-
-    /**
-     * Export report to PDF/Excel
-     */
-    public function export(Report $report, $format = 'pdf')
+    private function getFilteredReports(Request $request)
     {
-        $report->load([
-            'reportDesign.fields',
-            'reportDesign.subDesigns.fields',
-            'subData.reportSubDesign'
-        ]);
+        $status = $request->input('status');
+        $start  = $request->input('date_from');
+        $end    = $request->input('date_to');
+        $design = $request->input('report_design_id');
+        $search = $request->input('search');
 
-        switch ($format) {
-            case 'pdf':
-                return $this->exportToPdf($report);
-            case 'excel':
-                return $this->exportToExcel($report);
-            default:
-                return back()->withErrors(['error' => 'Format export tidak didukung']);
+        $query = Report::with(['reportDesign', 'creator', 'subData'])
+                    ->latest();
+
+        if ($start) {
+            $query->whereDate('created_at', '>=', $start);
         }
+
+        if ($end) {
+            $query->whereDate('created_at', '<=', $end);
+        }
+
+        if ($design) {
+            $query->where('report_design_id', $design);
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                ->orWhereHas('creator', function($q2) use ($search) {
+                    $q2->where('name', 'like', "%$search%");
+                })
+                ->orWhereHas('reportDesign', function($q2) use ($search) {
+                    $q2->where('name', 'like', "%$search%");
+                });
+            });
+        }
+
+        return $query->get(); //  untuk export, tidak paginate
     }
 
-    private function exportToPdf(Report $report)
+    public function exportList(Request $request)
     {
-        // Implement PDF export logic here
-        // You can use libraries like DomPDF or TCPDF
-        
-        $pdf = app('dompdf.wrapper');
-        $pdf->loadView('reports.pdf.export', compact('report'));
-        
-        return $pdf->download("report-{$report->id}.pdf");
+        $reports = $this->getFilteredReports($request);
+
+        if ($reports->isEmpty()) {
+            return back()->with('error', 'Tidak ada data untuk diexport');
+        }
+
+        $timestamp = now()->format('Y-m-d H.i');
+        $username  = auth()->user()->name;
+
+        $fileName = "Rekap Report {$timestamp} - Download {$username}.xlsx";
+
+        return Excel::download(new ReportListExport($reports), $fileName);
     }
 
-    private function exportToExcel(Report $report)
+
+    public function exportPdf(Report $report)
     {
-        // Implement Excel export logic here
-        // You can use Laravel Excel package
-        
-        return Excel::download(new ReportExport($report), "report-{$report->id}.xlsx");
+        $pdf = \PDF::loadView('exports.report-pdf', [
+            'report' => $report
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download('report-'.$report->id.'.pdf');
     }
+
+
 
     /**
      * Get report statistics

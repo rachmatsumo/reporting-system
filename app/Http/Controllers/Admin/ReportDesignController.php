@@ -32,7 +32,7 @@ class ReportDesignController
             
             // Main fields validation
             'main_fields.*.label' => 'required|string|max:255',
-            'main_fields.*.type' => 'required|in:text,textarea,textarea_rich,number,file,image,date,time,month,year,checkbox,select,map,personnel,attendance',
+            'main_fields.*.type' => 'required|in:text,textarea,textarea_rich,number,file,image,date,time,month,year,checkbox,select,map,personnel,attendance,signing',
             'main_fields.*.required' => 'nullable|boolean',
             'main_fields.*.default_value' => 'nullable|string',
             'main_fields.*.options.*.value' => 'required_if:main_fields.*.type,select|string',
@@ -43,7 +43,7 @@ class ReportDesignController
             'sub_reports.*.type' => 'nullable|in:form,checklist,table,custom',
             'sub_reports.*.description' => 'nullable|string',
             'sub_reports.*.fields.*.label' => 'required|string|max:255',
-            'sub_reports.*.fields.*.type' => 'required|in:text,textarea,textarea_rich,number,file,image,date,time,month,year,checkbox,select,map,personnel,attendance',
+            'sub_reports.*.fields.*.type' => 'required|in:text,textarea,textarea_rich,number,file,image,date,time,month,year,checkbox,select,map,personnel,attendance,signing',
             'sub_reports.*.fields.*.required' => 'nullable|boolean',
             'sub_reports.*.fields.*.default_value' => 'nullable|string',
             'sub_reports.*.fields.*.options.*.value' => 'required_if:sub_reports.*.fields.*.type,select|string',

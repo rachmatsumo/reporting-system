@@ -4,6 +4,7 @@
     $inputClass = 'form-control' . (isset($errors) && $errors->has($name) ? ' is-invalid' : '');
     $selectClass = 'form-select' . (isset($errors) && $errors->has($name) ? ' is-invalid' : '');
     $required = $field->required ? 'required' : '';
+    $signatureId = 'signature-' . uniqid() . '-' . Str::slug($name);
 @endphp
 
 @switch($field->type)
@@ -15,7 +16,50 @@
     @case('textarea_rich')
         <textarea name="{{ $name }}" class="{{ $inputClass }} rich-editor richtext" rows="4" 
                   placeholder="{{ $field->default_value }}" {{ $required }}>{{ $value }}</textarea>
-        {{-- <small class="text-muted">Rich text editor akan aktif di sini</small> --}}
+        @break
+
+    @case('signing')
+        @php
+            $signatureId = 'sig-' . uniqid();
+        @endphp
+
+        <div class="signature-container" id="container-{{ $signatureId }}"> 
+            <div class="signature-wrapper p-0 bg-white mb-2">
+                <canvas 
+                    id="canvas-{{ $signatureId }}"
+                    class="signature-canvas rounded"
+                    data-signature-id="{{ $signatureId }}"
+                    style="width:100%;height:200px; border:1px solid #dee2e6; background:white; touch-action:none;"
+                ></canvas>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-danger btn-sm d-none" id="clear-{{ $signatureId }}">
+                    <i class="bi bi-x-circle"></i> Hapus
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" id="undo-{{ $signatureId }}">Undo</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="save-{{ $signatureId }}">Simpan</button>
+                <small class="text-muted ms-auto" id="status-{{ $signatureId }}">Siap</small>
+            </div>
+
+            <input type="hidden"
+                name="{{ $name }}"
+                id="input-{{ $signatureId }}"
+                value="{{ $value }}"
+            >
+        </div>
+
+        @if($value)
+            <small class="text-success">Tanda tangan sebelumnya tampil di bawah:</small>
+            <img src="{{ $value }}" class="border mt-2" style="max-width:200px;">
+        @endif
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                console.log('start init');
+                initializeSignaturePad("{{ $signatureId }}");
+            });
+        </script>
         @break
         
     @case('select')
@@ -46,16 +90,36 @@
         @break
         
     @case('file')
+        {{-- File input --}}
         <input type="file" name="{{ $name }}" class="{{ $inputClass }}" {{ $required }}>
-        @if($field->default_value)
-            <small class="text-muted">Format yang diizinkan: {{ $field->default_value }}</small>
+
+        {{-- ✅ Jika ada existing file lama --}}
+        @if($value)
+            <div class="mt-1">
+                <small class="text-success">File saat ini: </small>
+                <a href="{{ asset($value) }}" target="_blank">{{ basename($value) }}</a>
+            </div>
+
+            {{-- ✅ Hidden old value --}}
+            <input type="hidden" name="{{ $name }}_old" value="{{ $value }}">
         @endif
-        @break
-        
+    @break
+
+
     @case('image')
         <input type="file" name="{{ $name }}" class="{{ $inputClass }}" accept="image/*" {{ $required }}>
-        <small class="text-muted">Format gambar: JPG, PNG, GIF (Max: 2MB)</small>
-        @break
+
+        @if($value)
+            <div class="mt-2">
+                <img src="{{ asset($value) }}" class="border rounded" style="max-width:150px;">
+            </div>
+
+            {{-- ✅ Hidden old value --}}
+            <input type="hidden" name="{{ $name }}_old" value="{{ $value }}">
+        @endif
+
+    @break
+
         
     @case('date')
         <input type="date" name="{{ $name }}" class="{{ $inputClass }}" 
@@ -123,33 +187,6 @@
             <input type="hidden" name="{{ $name }}" class="map-coordinates" value="{{ $value }}">
         </div>
         @break
-        
-    {{-- @case('map')
-        <div class="map-input-container">
-            <div class="border rounded p-3 bg-light text-center map-input" 
-                 data-field="{{ $name }}" onclick="openMapSelector('{{ $name }}')">
-                @if($value)
-                    @php $coordinates = is_string($value) ? json_decode($value, true) : $value; @endphp
-                    @if(isset($coordinates['lat']) && isset($coordinates['lng']))
-                        <i class="bi bi-map text-success fa-2x mb-2"></i>
-                        <br>
-                        <small class="text-success">
-                            Lokasi: {{ $coordinates['lat'] }}, {{ $coordinates['lng'] }}
-                        </small>
-                    @else
-                        <i class="bi bi-map fa-2x text-muted mb-2"></i>
-                        <br>
-                        <small class="text-muted">Klik untuk pilih lokasi</small>
-                    @endif
-                @else
-                    <i class="bi bi-map fa-2x text-muted mb-2"></i>
-                    <br>
-                    <small class="text-muted">Klik untuk pilih lokasi</small>
-                @endif
-            </div>
-            <input type="hidden" name="{{ $name }}" class="map-coordinates" value="{{ $value }}">
-        </div>
-        @break --}}
         
     @case('attendance')
         <div class="attendance-container">
@@ -231,6 +268,6 @@
                value="{{ $value }}" {{ $required }}>
 @endswitch
 
-@if($field->default_value && !in_array($field->type, ['checkbox', 'map', 'attendance']))
+@if($field->default_value && !in_array($field->type, ['checkbox', 'map', 'attendance', 'signing']))
     <small class="text-muted">Default: {{ $field->default_value }}</small>
 @endif

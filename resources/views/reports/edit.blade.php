@@ -94,12 +94,28 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div> --}}
-                    <div class="col-md-4">
+                    {{-- <div class="col-md-4">
                         <label class="form-label">Status</label>
                         <select name="status" class="form-select">
                             <option value="draft" {{ $report->status == 'draft' ? 'selected' : '' }}>Draft</option>
                             <option value="submitted" {{ $report->status == 'submitted' ? 'selected' : '' }}>Submit</option>
                         </select>
+                    </div> --}}
+                    <div class="mt-4">
+                        @switch($report->status)
+                            @case('draft')
+                                <span class="badge bg-secondary fs-8">Draft</span>
+                                @break
+                            @case('submitted')
+                                <span class="badge bg-warning fs-8">Submitted</span>
+                                @break
+                            @case('approved')
+                                <span class="badge bg-success fs-8">Approved</span>
+                                @break
+                            @case('rejected')
+                                <span class="badge bg-danger fs-8">Rejected</span>
+                                @break
+                        @endswitch
                     </div>
                 </div>
 
@@ -133,7 +149,7 @@
                                     @php
                                         $fieldValue = $report->data[$field->name] ?? null;
                                     @endphp
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-12 mb-3">
                                         <label class="form-label">
                                             {{ $field->label }}
                                             @if($field->required)
@@ -248,7 +264,7 @@
                                             <div class="card-body">
                                                 <div class="row">
                                                     @foreach($subDesign->fields as $subField)
-                                                    <div class="col-md-6 mb-3">
+                                                    <div class="col-md-12 mb-3">
                                                         <label class="form-label">
                                                             {{ $subField->label }}
                                                             @if($subField->required)
@@ -282,7 +298,7 @@
                 <div class="text-end mt-5">
                     <a href="{{ route('reports.index') }}" class="btn btn-secondary">Batal</a>
                     <button type="submit" name="action" value="draft" class="btn btn-outline-primary">Simpan sebagai Draft</button>
-                    <button type="submit" name="action" value="submit" class="btn btn-primary">Submit Report</button>
+                    <button type="submit" name="action" value="submitted" class="btn btn-primary">Submit Report</button>
                 </div>
             </form>
         </div> 
@@ -455,73 +471,10 @@
         const fieldName = tbodyId.replace('attendanceTableBody-', '').replace(/_/g, '[').replace(/$/, ']');
         // console.log('Field name for summary update:', tbodyName, tbodyId); 
         updateAttendanceSummary(fieldSlug,tbodyName);
-    });
+    }); 
 
-
-    // Update createFieldInput function untuk attendance
-    // function createFieldInput(field, name, isTableCell = false) {
-    //     const inputClass = isTableCell ? 'form-control form-control-sm' : 'form-control';
-    //     const selectClass = isTableCell ? 'form-select form-select-sm' : 'form-select';
-    //     const required = field.required ? 'required' : '';
-        
-    //     switch (field.type) {
-    //         case 'attendance':
-    //             return `
-    //                 <div class="attendance-container">
-    //                     <div class="d-flex justify-content-between align-items-center mb-3">
-    //                         <label class="form-label mb-0">
-    //                             <i class="bi bi-people me-2"></i>Daftar Kehadiran
-    //                         </label>
-    //                         <button type="button" class="btn btn-primary btn-sm" onclick="addAttendanceRow('${name.replace(/[^a-zA-Z0-9]/g, '_')}', '${name}')">
-    //                             <i class="bi bi-plus"></i> Tambah Personnel
-    //                         </button>
-    //                     </div>
-                        
-    //                     <div class="table-responsive">
-    //                         <table class="table table-bordered">
-    //                             <thead class="table-light">
-    //                                 <tr>
-    //                                     <th width="5%">#</th>
-    //                                     <th width="25%">Personnel</th>
-    //                                     <th width="20%">Status</th>
-    //                                     <th width="40%">Keterangan</th>
-    //                                     <th width="10%">Action</th>
-    //                                 </tr>
-    //                             </thead>
-    //                             <tbody id="attendanceTableBody-${name.replace(/[^a-zA-Z0-9]/g, '_')}" name="${name}">
-    //                                 <!-- Rows akan ditambahkan via JavaScript -->
-    //                             </tbody>
-    //                         </table>
-    //                     </div>
-                        
-    //                     <input type="hidden" name="${name}" class="attendance-summary" value="">
-    //                 </div>
-    //             `;
-                
-    //         // ... rest of existing cases
-    //         case 'textarea':
-    //             return `<textarea name="${name}" class="${inputClass}" rows="${isTableCell ? '1' : '3'}" placeholder="${field.default_value}" ${required}></textarea>`;
-            
-    //         case 'select':
-    //             let selectHtml = `<select name="${name}" class="${selectClass}" ${required}>`;
-    //             selectHtml += `<option value="">-- Pilih ${field.label} --</option>`;
-    //             if (field.options) {
-    //                 field.options.forEach(option => {
-    //                     selectHtml += `<option value="${option.value}">${option.label}</option>`;
-    //                 });
-    //             }
-    //             selectHtml += `</select>`;
-    //             return selectHtml;
-                
-    //         default:
-    //             return `<input type="text" name="${name}" class="${inputClass}" placeholder="${field.default_value}" ${required}>`;
-    //     }
-
-
-    // }
     // Sub-report row counters
     const subReportCounters = {};
-
 
     // Sub-report designs data
     const subReportDesigns = {
@@ -610,7 +563,7 @@
         
         subDesign.fields.forEach(field => {
             cardHtml += `
-                <div class="col-md-6 mb-3">
+                <div class="col-md-12 mb-3">
                     <label class="form-label">
                         ${field.label}
                         ${field.required ? '<span class="text-danger">*</span>' : ''}
@@ -628,6 +581,7 @@
         
         container.insertAdjacentHTML('beforeend', cardHtml);
         initSummernote();
+        initializeNewSignatures(container);
     }
 
     function initSummernote() {
@@ -644,7 +598,192 @@
                 ]
             }).attr('data-summernote-initialized', 'true');
         });
+    } 
+
+    function initializeNewSignatures(scopeElement = document) {
+        scopeElement.querySelectorAll('canvas.signature-canvas').forEach(canvas => {
+            const signatureId = canvas.dataset.signatureId;
+            if (!window['signaturePad_' + signatureId]) {
+                // Belum diinisialisasi → trigger observer dari case 'signing'
+                const container = document.getElementById('container-' + signatureId);
+                if (container) {
+                    const observer = new MutationObserver((mutations, obs) => {
+                        if (container.offsetWidth > 0 && container.offsetHeight > 0) {
+                            initializeSignaturePad(signatureId, canvas.name || '');
+                            obs.disconnect();
+                        }
+                    });
+                    observer.observe(container, { attributes: true, childList: true, subtree: true });
+                }
+            }
+        });
     }
+
+    function initSignatureWhenVisible(canvas, callback) {
+        const observer = new ResizeObserver(() => {
+            if (canvas.offsetWidth > 0 && canvas.offsetHeight > 0) {
+                observer.disconnect();
+                callback();
+            }
+        });
+        observer.observe(canvas);
+    }
+
+    function initializeNewSignatures(scopeElement = document) {
+        scopeElement.querySelectorAll('canvas.signature-canvas').forEach(canvas => {
+
+            const signatureId = canvas.dataset.signatureId;
+
+            if (!window['signaturePad_' + signatureId]) {
+                const container = document.getElementById('container-' + signatureId);
+
+                if (container) {
+                    const observer = new MutationObserver((mutations, obs) => {
+                        if (container.offsetWidth > 0) {
+
+                            initializeSignaturePad(signatureId);
+
+                            obs.disconnect();
+                        }
+                    });
+
+                    observer.observe(container, { attributes: true, childList: true, subtree: true });
+                }
+            }
+        });
+    }
+
+    function initializeSignaturePad(signatureId, inputName) {
+        const canvas = document.getElementById('canvas-' + signatureId);
+        const input = document.getElementById('input-' + signatureId);
+        const clearBtn = document.getElementById('clear-' + signatureId);
+        const undoBtn = document.getElementById('undo-' + signatureId);
+        const simpanBtn = document.getElementById('save-' + signatureId);
+        const statusText = document.getElementById('status-' + signatureId);
+
+        if (!canvas) {
+            console.error('Canvas not found for', signatureId);
+            return;
+        }
+
+        // Atur ukuran canvas responsif
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const containerWidth = container.clientWidth || 600;
+            const containerHeight = 200;
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+
+            canvas.width = containerWidth * ratio;
+            canvas.height = containerHeight * ratio;
+            canvas.style.width = containerWidth + 'px';
+            canvas.style.height = containerHeight + 'px';
+
+            const ctx = canvas.getContext('2d'); 
+        }
+
+        setTimeout(() => {
+            resizeCanvas(); 
+        }, 1000);
+
+        const signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)',
+            penColor: 'rgb(0, 0, 0)'
+        });
+
+        window['signaturePad_' + signatureId] = signaturePad;
+
+        signaturePad.onBegin = () => {
+            statusText.textContent = 'Menggambar...';
+        };
+
+        signaturePad.onEnd = () => {
+            console.log('end');
+            if (!signaturePad.isEmpty()) {
+                input.value = signaturePad.toDataURL();
+                statusText.textContent = 'Tanda tangan tersimpan';
+            } else {
+                input.value = '';
+                statusText.textContent = 'Kosong';
+            }
+            // const data = signaturePad.toData();
+            // if (data) { 
+            //     signaturePad.fromData(data);
+            //     input.value = signaturePad.isEmpty() ? '' : signaturePad.toDataURL();
+            // }
+        };
+
+        clearBtn.addEventListener('click', function () {
+            signaturePad.clear();
+            input.value = '';
+            statusText.textContent = 'Dihapus';
+        });
+
+        undoBtn.addEventListener('click', function () {
+            const data = signaturePad.toData();
+            if (data) {
+                data.pop(); // hapus langkah terakhir
+                signaturePad.fromData(data);
+                input.value = signaturePad.isEmpty() ? '' : signaturePad.toDataURL();
+                statusText.textContent = 'Undo';
+            }
+        });
+
+        simpanBtn.addEventListener('click', function () {
+            const data = signaturePad.toData();
+            console.log(data);
+            if (data) { 
+                signaturePad.fromData(data);
+                input.value = signaturePad.isEmpty() ? '' : signaturePad.toDataURL();
+                statusText.textContent = 'Disimpan';
+            }
+        });
+
+        // Sesuaikan ukuran saat window resize 
+    }
+
+    function initializeSignaturePadFinal(signatureId){
+        const canvas = document.getElementById('canvas-' + signatureId);
+        const input = document.getElementById('input-' + signatureId);
+        console.log(input);
+
+        function setup(){
+            const parent = canvas.parentElement;
+            const width = parent.clientWidth || 600;
+            const height = 200;
+
+            const ratio = window.devicePixelRatio || 1;
+            canvas.width = width * ratio;
+            canvas.height = height * ratio;
+            canvas.style.width = '100%';
+            canvas.style.height = height + 'px';
+
+            const ctx = canvas.getContext("2d");
+            ctx.scale(ratio, ratio);
+
+            const pad = new SignaturePad(canvas, {
+                backgroundColor: "#fff",
+                penColor: "#000"
+            });
+
+            pad.onEnd = () => {
+                input.value = pad.isEmpty() ? "" : pad.toDataURL();
+                console.log("onEnd:", pad.isEmpty() ? "EMPTY" : "HAS DATA");
+            };
+
+            window["signaturePad_" + signatureId] = pad;
+        }
+
+        // menunggu sampai layout fix, TANPA scaling ulang lagi
+        let tries = 0;
+        let timer = setInterval(() => {
+            tries++;
+            if(canvas.offsetWidth > 0){
+                clearInterval(timer);
+                setup();
+            }
+            if(tries > 20) clearInterval(timer);
+        }, 50);
+    } 
 
     function createFieldInput(field, name, isTableCell = false) {
         const inputClass = isTableCell ? 'form-control form-control-sm' : 'form-control';
@@ -751,6 +890,34 @@
                     </div>
                     <input type="hidden" name="${name}" class="map-coordinates">
                 `;
+
+            case 'signing':
+                const signatureId = 'sig-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+
+                const html = `
+                    <div class="signature-container" id="container-${signatureId}"> 
+                        <div class="p-0 bg-white mb-2">
+                            <canvas id="canvas-${signatureId}" 
+                                    class="signature-canvas rounded"
+                                    data-signature-id="${signatureId}"
+                                    style="width:100%; height:200px; background:white; border:1px solid #dee2e6; cursor:crosshair;">
+                            </canvas>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-danger btn-sm d-none" id="clear-${signatureId}">Hapus</button>
+                            <button type="button" class="btn btn-danger btn-sm" id="undo-${signatureId}">Undo</button>
+                            <button type="button" class="btn btn-secondary btn-sm" id="save-${signatureId}">Simpan</button>
+                            <small class="text-muted ms-auto" id="status-${signatureId}">Siap</small>
+                        </div>
+
+                        <input type="" id="input-${signatureId}" name="${name}">
+                    </div>
+                `;
+
+                requestAnimationFrame(() => initializeSignaturePadFinal(signatureId));
+
+                return html;  
             
             case 'attendance':
                 return `

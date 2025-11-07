@@ -74,7 +74,7 @@
                                     <label class="form-label">Tipe Field <span class="text-danger">*</span></label>
                                     <select name="main_fields[{{ $loop->index }}][type]" class="form-select" 
                                             onchange="handleTypeChange('main-field-{{ $loop->index }}', {{ $loop->index }}, this.value, 'main_fields')" required>
-                                        @foreach(['text' => 'Text', 'textarea' => 'Textarea', 'textarea_rich' => 'Textarea with Editor', 'number' => 'Number', 'file' => 'File', 'image' => 'Image', 'date' => 'Date', 'time' => 'Time', 'month' => 'Month', 'year' => 'Year', 'checkbox' => 'Checkbox', 'select' => 'Select', 'map' => 'Map', 'personnel' => 'Personnel', 'attendance' => 'Attendance'] as $value => $label)
+                                        @foreach(['text' => 'Text', 'textarea' => 'Textarea', 'textarea_rich' => 'Textarea with Editor', 'number' => 'Number', 'file' => 'File', 'image' => 'Image', 'date' => 'Date', 'time' => 'Time', 'month' => 'Month', 'year' => 'Year', 'checkbox' => 'Checkbox', 'select' => 'Select', 'map' => 'Map', 'personnel' => 'Personnel', 'attendance' => 'Attendance', 'signing' => 'Signing'] as $value => $label)
                                             <option value="{{ $value }}" {{ $field->type === $value ? 'selected' : '' }}>{{ $label }}</option>
                                         @endforeach
                                     </select>
@@ -221,7 +221,7 @@
                                                     <label class="form-label">Tipe Field <span class="text-danger">*</span></label>
                                                     <select name="sub_reports[{{ $loop->parent->index }}][fields][{{ $loop->index }}][type]" class="form-select" 
                                                             onchange="handleTypeChange('sub-field-{{ $loop->parent->index }}-{{ $loop->index }}', {{ $loop->index }}, this.value, 'sub_reports[{{ $loop->parent->index }}][fields]')" required>
-                                                        @foreach(['text' => 'Text', 'textarea' => 'Textarea', 'textarea_rich' => 'Textarea with Editor', 'number' => 'Number', 'file' => 'File', 'image' => 'Image', 'date' => 'Date', 'time' => 'Time', 'month' => 'Month', 'year' => 'Year', 'checkbox' => 'Checkbox', 'select' => 'Select', 'map' => 'Map', 'personnel' => 'Personnel', 'attendance' => 'Attendance'] as $value => $label)
+                                                        @foreach(['text' => 'Text', 'textarea' => 'Textarea', 'textarea_rich' => 'Textarea with Editor', 'number' => 'Number', 'file' => 'File', 'image' => 'Image', 'date' => 'Date', 'time' => 'Time', 'month' => 'Month', 'year' => 'Year', 'checkbox' => 'Checkbox', 'select' => 'Select', 'map' => 'Map', 'personnel' => 'Personnel', 'attendance' => 'Attendance', 'signing' => 'Signing'] as $value => $label)
                                                             <option value="{{ $value }}" {{ $subField->type === $value ? 'selected' : '' }}>{{ $label }}</option>
                                                         @endforeach
                                                     </select>
@@ -388,7 +388,8 @@ const fieldTypes = [
     { value: 'select', label: 'Select' },
     { value: 'map', label: 'Map' },
     { value: 'personnel', label: 'Personnel' },
-    { value: 'attendance', label: 'Attendance' }
+    { value: 'attendance', label: 'Attendance' },
+    { value: 'signing', label: 'Signing' }
 ];
 
 const subReportTypes = [

@@ -67,6 +67,14 @@
         </div>
         @break
         
+    @case('signing')
+        <div class="border rounded p-3 bg-light text-center">
+            <i class="bi bi-pen text-muted mb-2"></i>
+            <br>
+            <small class="text-muted">Tanda Tangan</small>
+        </div>
+        @break
+        
     @case('personnel')
         <select class="{{ $selectClass }}" disabled>
             <option>-- Pilih Personnel --</option>

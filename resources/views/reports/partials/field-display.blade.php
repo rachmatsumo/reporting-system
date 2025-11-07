@@ -291,7 +291,12 @@
             <span class="text-muted">-</span>
         @endif
         @break
-  
+                
+    @case('signing')
+        @if($value)
+                <img src="{{ $value }}" alt="Signature" style="max-width: 300px; border:1px solid #ccc;">
+        @endif
+        @break
 
     @default
         <span>{{ $value }}</span>

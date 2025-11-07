@@ -31,23 +31,23 @@ Route::middleware('auth')->group(function () {
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
     Route::resource('menus', MenuController::class); 
-    Route::resource('reports', ReportController::class); 
     Route::resource('activity-log', ActivityLogController::class)->only('index'); 
 
     // Reports Routes
-    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('reports/create', [ReportController::class, 'create'])->name('reports.create');
+    // Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    // Route::get('reports/create', [ReportController::class, 'create'])->name('reports.create');
+    // Route::post('reports', [ReportController::class, 'store'])->name('reports.store');
+    // Route::get('reports/{report}', [ReportController::class, 'show'])->name('reports.show');
+    // Route::get('reports/{report}/edit', [ReportController::class, 'edit'])->name('reports.edit');
+    // Route::put('reports/{report}', [ReportController::class, 'update'])->name('reports.update');
+    // Route::delete('reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
     Route::get('reports/create/{reportDesign}', [ReportController::class, 'createFromDesign'])->name('reports.create-from-design');
-    Route::post('reports', [ReportController::class, 'store'])->name('reports.store');
-    Route::get('reports/{report}', [ReportController::class, 'show'])->name('reports.show');
-    Route::get('reports/{report}/edit', [ReportController::class, 'edit'])->name('reports.edit');
-    Route::put('reports/{report}', [ReportController::class, 'update'])->name('reports.update');
-    Route::delete('reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
     Route::post('reports/bulk-action', [ReportController::class, 'bulkAction'])->name('reports.bulk-action');
-    Route::get('reports/export/{report}/{type}', [ReportController::class, 'export'])->name('reports.export');
+    Route::get('reports/export', [ReportController::class, 'exportList'])->name('reports.export.list'); 
+    Route::get('reports/{report}/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
+    Route::resource('reports', ReportController::class); 
 	
-	Route::get('report-designs/{reportDesign}/clone', [ReportDesignController::class, 'clone'])
-         ->name('report-designs.clone'); 
+	Route::get('report-designs/{reportDesign}/clone', [ReportDesignController::class, 'clone'])->name('report-designs.clone'); 
 
 	Route::resource('report-designs', ReportDesignController::class)->only(['index', 'show', 'edit', 'update', 'create', 'store', 'destroy']);
 	 

@@ -151,7 +151,8 @@ const fieldTypes = [
     { value: 'select', label: 'Select' },
     { value: 'map', label: 'Map' },
     { value: 'personnel', label: 'Personnel' },
-    { value: 'attendance', label: 'Attendance' }
+    { value: 'attendance', label: 'Attendance' },
+    { value: 'signing', label: 'Signing' }
 ];
 
 const subReportTypes = [

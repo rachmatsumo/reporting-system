@@ -16,6 +16,17 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
+    <style>
+        .signature-pad {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+        }
+    </style>
 
     @stack('styles')
 </head>

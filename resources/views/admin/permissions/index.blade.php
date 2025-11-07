@@ -10,6 +10,8 @@
                 <tr>
                     <th>No</th>
                     <th>Nama Permission</th>
+                    <th>Created at</th>
+                    <th>Updated at</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -18,6 +20,8 @@
                 <tr>
                     <td>{{ $permissions->firstItem() + $loop->index }}</td>
                     <td>{{ $permission->name }}</td>
+                    <td>{{ $permission->created_at }}</td>
+                    <td>{{ $permission->updated_at }}</td>
                     <td> 
                         <x-action-dropdown :model="$permission" :show="['edit', 'delete']"/>
                     </td>

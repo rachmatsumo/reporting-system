@@ -22,3 +22,22 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Ignore semua file kecuali yang disebutkan di bawah
+/public/assets/uploads/**/*
+
+# Izinkan folder-folder (penting: harus ada trailing slash)
+!/public/assets/uploads/ 
+!/public/assets/uploads/avatar/
+!/public/assets/uploads/avatar/thumbnails/ 
+!/public/assets/uploads/reports/
+
+# Izinkan file .gitkeep di semua folder
+!/public/assets/uploads/.gitkeep 
+!/public/assets/uploads/avatar/.gitkeep
+!/public/assets/uploads/avatar/thumbnails/.gitkeep 
+!/public/assets/uploads/reports/.gitkeep 
+
+# Izinkan file default
+!/public/assets/uploads/avatar/default.png 
+!/public/assets/uploads/avatar/thumbnails/default.png 

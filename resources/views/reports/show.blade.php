@@ -184,28 +184,30 @@
                                                     <h6 class="mb-0">{{ $subDesign->name }} #{{ $subData->row_index + 1 }}</h6>
                                                 </div>
                                                 <div class="card-body">
-                                                    <table class="table table-sm">
-                                                        <tbody>
-                                                            @foreach($subDesign->fields as $subField)
-                                                                @php
-                                                                    $subFieldValue = $subData->data[$subField->name] ?? null;
-                                                                @endphp
-                                                                <tr>
-                                                                    <td width="40%" class="fw-bold">{{ $subField->label }}</td>
-                                                                    <td>
-                                                                        @if($subFieldValue !== null && $subFieldValue !== '')
-                                                                            @include('reports.partials.field-display', [
-                                                                                'field' => $subField, 
-                                                                                'value' => $subFieldValue
-                                                                            ])
-                                                                        @else
-                                                                            <span class="text-muted">-</span>
-                                                                        @endif
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-sm">
+                                                            <tbody>
+                                                                @foreach($subDesign->fields as $subField)
+                                                                    @php
+                                                                        $subFieldValue = $subData->data[$subField->name] ?? null;
+                                                                    @endphp
+                                                                    <tr>
+                                                                        <td width="40%" class="fw-bold text-wrap">{{ $subField->label }}</td>
+                                                                        <td>
+                                                                            @if($subFieldValue !== null && $subFieldValue !== '')
+                                                                                @include('reports.partials.field-display', [
+                                                                                    'field' => $subField, 
+                                                                                    'value' => $subFieldValue
+                                                                                ])
+                                                                            @else
+                                                                                <span class="text-muted">-</span>
+                                                                            @endif
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

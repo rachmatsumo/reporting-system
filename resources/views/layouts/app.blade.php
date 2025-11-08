@@ -29,6 +29,60 @@
         .icon-shape i{
             top : unset!important;
         }
+        .map-input {
+            cursor: pointer;
+            min-height: 60px;
+            transition: all 0.3s ease;
+        }
+
+        .map-input:hover {
+            background-color: #e3f2fd !important;
+            border-color: #2196f3 !important;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .sub-report-card {
+            border: 2px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+
+        .sub-report-card:hover {
+            border-color: #007bff;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.1);
+        }
+
+        .alert.position-fixed {
+            max-width: 300px;
+        }
+
+        .form-control-sm, .form-select-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        /* .map-input {
+            cursor: pointer;
+            min-height: 80px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .map-input:hover {
+            background-color: #e3f2fd !important;
+            border-color: #2196f3 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+        } */
+
+        #mapContainer {
+            border-radius: 8px;
+            overflow: hidden;
+        }
     </style>
 
     @stack('styles')

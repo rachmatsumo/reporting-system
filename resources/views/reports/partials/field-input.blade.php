@@ -15,7 +15,7 @@
         
     @case('textarea_rich')
         <textarea name="{{ $name }}" class="{{ $inputClass }} rich-editor richtext" rows="4" 
-                  placeholder="{{ $field->default_value }}" {{ $required }}>{{ $value }}</textarea>
+                  placeholder="{{ $field->default_value }}" {{ $required }}>{{ $value }}</textarea> 
         @break
 
     @case('signing')
@@ -50,8 +50,10 @@
         </div>
 
         @if($value)
-            <small class="text-success">Tanda tangan sebelumnya tampil di bawah:</small>
-            <img src="{{ $value }}" class="border mt-2" style="max-width:200px;">
+            <div class="d-flex flex-column">
+                <small class="text-success">Tanda tangan sebelumnya tampil di bawah:</small>
+                <img src="{{ $value }}" class="border mt-2" style="max-width:200px;">
+            </div>
         @endif
 
         <script>
@@ -90,33 +92,31 @@
         @break
         
     @case('file')
-        {{-- File input --}}
-        <input type="file" name="{{ $name }}" class="{{ $inputClass }}" {{ $required }}>
-
-        {{-- ✅ Jika ada existing file lama --}}
+        {{-- Jika ada existing file lama --}}
         @if($value)
-            <div class="mt-1">
+            <div class="mb-2">
                 <small class="text-success">File saat ini: </small>
                 <a href="{{ asset($value) }}" target="_blank">{{ basename($value) }}</a>
             </div>
 
-            {{-- ✅ Hidden old value --}}
+            {{-- Hidden old value --}}
             <input type="hidden" name="{{ $name }}_old" value="{{ $value }}">
         @endif
+        {{-- File input --}}
+        <input type="file" name="{{ $name }}" class="{{ $inputClass }}" {{ $required }}>
+
     @break
 
 
     @case('image')
-        <input type="file" name="{{ $name }}" class="{{ $inputClass }}" accept="image/*" {{ $required }}>
-
         @if($value)
             <div class="mt-2">
-                <img src="{{ asset($value) }}" class="border rounded" style="max-width:150px;">
+                <img src="{{ asset($value) }}" class="border rounded mb-2" style="max-width:150px;">
             </div>
-
-            {{-- ✅ Hidden old value --}}
+ 
             <input type="hidden" name="{{ $name }}_old" value="{{ $value }}">
         @endif
+        <input type="file" name="{{ $name }}" class="{{ $inputClass }}" accept="image/*" {{ $required }}>
 
     @break
 

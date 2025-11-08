@@ -2,77 +2,23 @@
 
 @extends('layouts.user_type.auth')
 @section('title', 'Buat Report')
-@section('content')
-
-<style>
-    .map-input {
-        cursor: pointer;
-        min-height: 60px;
-        transition: all 0.3s ease;
-    }
-
-    .map-input:hover {
-        background-color: #e3f2fd !important;
-        border-color: #2196f3 !important;
-    }
-
-    .table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-        font-size: 0.875rem;
-    }
-
-    .sub-report-card {
-        border: 2px solid #dee2e6;
-        transition: all 0.3s ease;
-    }
-
-    .sub-report-card:hover {
-        border-color: #007bff;
-        box-shadow: 0 4px 8px rgba(0,123,255,0.1);
-    }
-
-    .alert.position-fixed {
-        max-width: 300px;
-    }
-
-    .form-control-sm, .form-select-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-    }
-    /* .map-input {
-        cursor: pointer;
-        min-height: 80px;
-        transition: all 0.3s ease;
-        border-radius: 8px;
-    }
-
-    .map-input:hover {
-        background-color: #e3f2fd !important;
-        border-color: #2196f3 !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
-    } */
-
-    #mapContainer {
-        border-radius: 8px;
-        overflow: hidden;
-    }
-</style>
+@section('content') 
 
 <div class="container">
     <div class="card-header d-flex justify-content-between align-items-center border-bottom mb-3 py-3 px-1"> 
-        <div class="d-flex flex-column">
-            <h5 class="mb-0">Buat Report</h5>   
-            <p class="mb-0 text-muted">{{ $reportDesign->description }}</p>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <a href="{{ route('reports.index') }}" class="btn btn-sm btn-secondary mb-0">
-                <i class="bi bi-arrow-left"></i> Kembali
-            </a>
-            <button class="btn btn-sm btn-info mb-0" data-bs-toggle="modal" data-bs-target="#modal-scripts">
-                <i class="bi bi-code-slash me-2"></i>Running Script
-            </button> 
+        <div class="row w-100">
+            <div class="col-12 col-md-8 d-flex flex-column mb-2">
+                <h5 class="mb-0">Buat Report</h5>   
+                <p class="mb-0 text-muted">{{ $reportDesign->description }}</p>
+            </div>
+            <div class="col-12 col-md-4 justify-content-end d-flex align-items-center gap-2 mb-2">
+                <a href="{{ route('reports.index') }}" class="btn btn-sm btn-secondary mb-0">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+                <button class="btn btn-sm btn-info mb-0" data-bs-toggle="modal" data-bs-target="#modal-scripts">
+                    <i class="bi bi-code-slash me-2"></i>Running Script
+                </button> 
+            </div>
         </div>
     </div> 
     <form id="reportForm" method="POST" action="{{ route('reports.store') }}" enctype="multipart/form-data">
@@ -563,12 +509,13 @@
             $(this).summernote({
                 height: 200,
                 toolbar: [
-                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['bold', 'italic', 'underline']],
                     ['color', ['color']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['table', ['table']],
-                    ['insert', ['link']],
-                    ['view', ['fullscreen', 'codeview', 'help']]
+                    ['para', ['ul', 'ol']],
+                    ['view', ['fullscreen']]
+                    // ['table', ['table']],
+                    // ['insert', ['link']],
+                    // ['view', ['fullscreen', 'codeview', 'help']]
                 ]
             }).attr('data-summernote-initialized', 'true');
         });
@@ -1096,19 +1043,33 @@
         // Atur ukuran canvas responsif
         function resizeCanvas() {
             const container = canvas.parentElement;
-            const containerWidth = container.clientWidth || 600;
-            const containerHeight = 200;
+            const containerWidth = container.clientWidth;
+            const containerHeight = 200; // tinggi tetap
+
+            // Dapatkan rasio pixel device (agar signature tajam di layar retina)
             const ratio = Math.max(window.devicePixelRatio || 1, 1);
 
+            // Simpan data sebelum resize agar tidak hilang
+            const data = signaturePad.toData();
+
+            // Atur ulang ukuran canvas
             canvas.width = containerWidth * ratio;
             canvas.height = containerHeight * ratio;
             canvas.style.width = containerWidth + 'px';
             canvas.style.height = containerHeight + 'px';
 
-            const ctx = canvas.getContext('2d'); 
+            // Scale konteks 2D agar sesuai rasio pixel device
+            const ctx = canvas.getContext('2d');
+            ctx.scale(ratio, ratio);
+
+            // Restore data tanda tangan kalau ada
+            signaturePad.clear();
+            signaturePad.fromData(data);
         }
 
-        resizeCanvas();
+        setTimeout(() => {
+            resizeCanvas();
+        }, 1000);
 
         const signaturePad = new SignaturePad(canvas, {
             backgroundColor: 'rgb(255, 255, 255)',

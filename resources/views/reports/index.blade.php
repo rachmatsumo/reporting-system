@@ -39,17 +39,19 @@
                 value="{{ request('date_to') }}" placeholder="Sampai Tanggal">
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3 d-flex justify-content-end gap-2">
             <button type="button" class="btn btn-sm btn-outline-primary mb-2" onclick="applyFilters()">
                 <i class="bi bi-search"></i> Filter
             </button>
             <button type="button" class="btn btn-sm btn-outline-secondary mb-2" onclick="resetFilters()">
                 <i class="bi bi-arrow-counterclockwise"></i> Reset
             </button> 
-            <button type="button" class="btn btn-sm btn-success mb-2"
-                onclick="window.location.href='{{ route('reports.export.list', request()->query()) }}'">
-                <i class="bi bi-file-earmark-excel"></i> Excel
-            </button>
+            @if(request('report_design_id') || count($reportDesigns) < 2)
+                <button type="button" class="btn btn-sm btn-success mb-2"
+                    onclick="window.location.href='{{ route('reports.export.list', request()->query()) }}'">
+                    <i class="bi bi-file-earmark-excel"></i> Excel
+                </button>
+            @endif
 
         </div>
     </div>

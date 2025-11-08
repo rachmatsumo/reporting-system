@@ -12,10 +12,15 @@
                 $selectedOption = collect($field->options)->firstWhere('value', $value);
             @endphp
             @if($selectedOption)
+                {{ $selectedOption['label'] ?? $value }}
+            @else
+                {{ $value }}
+            @endif
+            {{-- @if($selectedOption)
                 <span class="badge bg-primary">{{ $selectedOption['label'] ?? $value }}</span>
             @else
                 <span class="text-muted">{{ $value }}</span>
-            @endif
+            @endif --}}
         @else
             <span class="text-muted">{{ $value }}</span>
         @endif

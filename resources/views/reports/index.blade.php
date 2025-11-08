@@ -84,9 +84,11 @@
             <table class="table table-striped table-hover">
                 <thead class="table-light">
                     <tr>
-                        <th width="5%">
-                            <input type="checkbox" class="form-check-input" id="selectAll">
-                        </th>
+                        @can('report.approval')
+                            <th width="5%">
+                                <input type="checkbox" class="form-check-input" id="selectAll">
+                            </th>
+                        @endcan
                         {{-- <th width="25%">Judul Report</th> --}}
                         <th>Report</th>
                         <th>Status</th>
@@ -99,10 +101,12 @@
                     @foreach($reports as $report)
                     <tr>
 
-                        <td class="text-center">
-                            <input type="checkbox" class="form-check-input report-checkbox" 
-                                    value="{{ $report->id }}">
-                        </td>
+                        @can('report.approval') 
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input report-checkbox" 
+                                        value="{{ $report->id }}">
+                            </td>
+                        @endcan
                         {{-- <td>
                             <strong>{{ $report->title }}</strong>
                             @if($report->reportDesign->subDesigns->count() > 0)
@@ -167,6 +171,7 @@
 
         <!-- Bulk Actions -->
         <div class="d-flex justify-content-between align-items-center mt-3">
+            @can('report.approval')
             <div>
                 <button type="button" class="btn btn-outline-danger btn-sm" 
                         onclick="bulkAction('delete')" id="bulkDeleteBtn" style="display: none;">
@@ -181,6 +186,7 @@
                     <i class="bi bi-x"></i> Reject Terpilih
                 </button>
             </div>
+            @endcan
             
             <!-- Pagination -->
             @if($reports instanceof \Illuminate\Pagination\LengthAwarePaginator)

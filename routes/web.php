@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PermissionController;
@@ -15,16 +16,12 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () { 
     
-    Route::get('/profile/change-password', [ProfileController::class, 'showChangePasswordForm'])
-        ->name('profile.change-password');
-    Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])
-        ->name('profile.update-password');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/profile/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('profile.change-password');
+    Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
     Route::resource('profile', ProfileController::class)->only('show', 'edit', 'update');
 
     Route::resource('users', UserController::class)->only('index', 'create', 'store', 'show', 'edit', 'update');
@@ -33,14 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('menus', MenuController::class); 
     Route::resource('activity-log', ActivityLogController::class)->only('index'); 
 
-    // Reports Routes
-    // Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
-    // Route::get('reports/create', [ReportController::class, 'create'])->name('reports.create');
-    // Route::post('reports', [ReportController::class, 'store'])->name('reports.store');
-    // Route::get('reports/{report}', [ReportController::class, 'show'])->name('reports.show');
-    // Route::get('reports/{report}/edit', [ReportController::class, 'edit'])->name('reports.edit');
-    // Route::put('reports/{report}', [ReportController::class, 'update'])->name('reports.update');
-    // Route::delete('reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
+    // Reports Routes 
     Route::get('reports/create/{reportDesign}', [ReportController::class, 'createFromDesign'])->name('reports.create-from-design');
     Route::post('reports/bulk-action', [ReportController::class, 'bulkAction'])->name('reports.bulk-action');
     Route::get('reports/export', [ReportController::class, 'exportList'])->name('reports.export.list'); 
@@ -48,7 +38,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('reports', ReportController::class); 
 	
 	Route::get('report-designs/{reportDesign}/clone', [ReportDesignController::class, 'clone'])->name('report-designs.clone'); 
-
 	Route::resource('report-designs', ReportDesignController::class)->only(['index', 'show', 'edit', 'update', 'create', 'store', 'destroy']);
 	 
 	Route::post('custom-scripts/run-script', [CustomScriptController::class, 'run'])->name('custom-scripts.run');

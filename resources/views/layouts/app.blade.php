@@ -26,6 +26,9 @@
             max-width: 400px;
             height: 200px;
         }
+        .icon-shape i{
+            top : unset!important;
+        }
     </style>
 
     @stack('styles')

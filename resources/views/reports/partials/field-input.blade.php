@@ -151,9 +151,9 @@
     @case('personnel')
         <select name="{{ $name }}" class="{{ $selectClass }}" {{ $required }}>
             <option value="">-- Pilih Personnel --</option>
-            @foreach($personnel ?? [] as $person)
+            @foreach($users ?? [] as $person)
                 <option value="{{ $person->id }}" {{ $value == $person->id ? 'selected' : '' }}>
-                    {{ $person->name }} - {{ $person->position ?? '' }}
+                    {{ $person->name }} {{ $person->position ?? '' }}
                 </option>
             @endforeach
         </select>

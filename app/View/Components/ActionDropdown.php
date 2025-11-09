@@ -34,7 +34,8 @@ class ActionDropdown extends Component
             'view'   => "$prefix.view",
             'edit'   => "$prefix.edit",
             'delete' => "$prefix.delete",
-            'pdf'    => "$prefix.export-pdf",
+            'pdf'    => "$prefix.view",
+            // 'pdf'    => "$prefix.export-pdf",
             'excel'  => "$prefix.export-excel",
             default  => "$prefix.$action",
         };
@@ -54,7 +55,7 @@ class ActionDropdown extends Component
                 'edit'   => route("$prefix.edit", $this->model),
                 // 'delete' => '#',
                 'delete' => $this->actions[$action] ?? route("$prefix.destroy", $this->model),
-                'pdf'    => route("$prefix.export", [$this->model, 'pdf']),
+                'pdf'    => route("$prefix.export.pdf", $this->model),
                 'excel'  => route("$prefix.export", [$this->model, 'excel']),
                 default  => '#',
             };

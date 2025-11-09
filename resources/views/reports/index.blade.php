@@ -164,6 +164,10 @@
                             @else
                                 <x-action-dropdown :model="$report" :show="['view', 'edit', 'delete']"/>
                             @endif
+                            <a href="{{ route('reports.export.pdf', $report->id) }}" 
+                                class="btn btn-sm btn-outline-danger mb-0">
+                                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                            </a>
                         </td>
                     </tr>
                     @endforeach

@@ -499,17 +499,19 @@ class ReportController
         return Excel::download(new ReportListExport($reports), $fileName);
     }
 
-
     public function exportPdf(Report $report)
     {
         $pdf = \PDF::loadView('exports.report-pdf', [
             'report' => $report
         ])->setPaper('a4', 'portrait');
 
-        return $pdf->download('report-'.$report->id.'.pdf');
-    }
+        $timestamp = now()->format('Y-m-d H.i');
+        $username  = auth()->user()->name;
 
-
+        $fileName = "Report {$timestamp} - Download {$username}.pdf";
+        
+        return $pdf->stream($fileName);
+    } 
 
     /**
      * Get report statistics

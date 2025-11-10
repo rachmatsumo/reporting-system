@@ -7,7 +7,7 @@
                         
     <!-- Filters -->
     <div class="row mb-2">
-        <div class="col-md-3 mb-2">
+        <div class="col-12 col-md-4 mb-2">
             <select class="form-select form-select-sm" id="filterDesign" name="report_design_id">
                 <option value="">All Report</option>
                 @foreach($reportDesigns ?? [] as $design)
@@ -19,7 +19,7 @@
             </select>
         </div>
 
-        <div class="col-md-2 mb-2">
+        <div class="col-12 col-md-2 mb-2">
             <select class="form-select form-select-sm" id="filterStatus">
                 <option value="">Semua Status</option>
                 <option value="draft"     {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
@@ -29,17 +29,40 @@
             </select>
         </div>
 
-        <div class="col-md-2 mb-2">
+        <div class="col-12 col-md-2 mb-2">
             <input type="date" class="form-control form-control-sm" id="filterDateFrom" 
                 value="{{ request('date_from') }}" placeholder="Dari Tanggal">
         </div>
 
-        <div class="col-md-2 mb-2">
+        <div class="col-12 col-md-2 mb-2">
             <input type="date" class="form-control form-control-sm" id="filterDateTo" 
                 value="{{ request('date_to') }}" placeholder="Sampai Tanggal">
         </div>
 
-        <div class="col-md-3 d-flex justify-content-end gap-2">
+        {{-- Per Page --}}
+        <div class="col-12 col-md-2 mb-2">
+            <select class="form-select form-select-sm" id="filterPerPage">
+                @foreach([10, 20, 50, 100, 500, 1000, 'Tampilkan semua'] as $size)
+                    <option value="{{ $size }}" 
+                        {{ request('per_page', 10) == $size ? 'selected' : '' }}>
+                        {{ $size }} {{ $size!=='Tampilkan semua' ? 'Per halaman' : '' }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+
+        {{-- Search --}}
+        <div class="col-12 col-md-3 mb-2">
+            <input type="text" class="form-control form-control-sm" 
+                id="filterSearch"
+                placeholder="Cari report..."
+                value="{{ request('search') }}">
+        </div>
+
+        <div class="col-12 col-md-4 d-flex gap-2">
             <button type="button" class="btn btn-sm btn-outline-primary mb-2" onclick="applyFilters()">
                 <i class="bi bi-search"></i> Filter
             </button>
@@ -51,30 +74,12 @@
                     onclick="window.location.href='{{ route('reports.export.list', request()->query()) }}'">
                     <i class="bi bi-file-earmark-excel"></i> Excel
                 </button>
+                <button type="button" class="btn btn-sm btn-danger mb-2"
+                        onclick="window.location.href='{{ route('reports.export.list.pdf', request()->query()) }}'">
+                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                </button>
             @endif
 
-        </div>
-    </div>
-    <div class="row mb-4">
-
-        {{-- Search --}}
-        <div class="col-md-3 mb-2">
-            <input type="text" class="form-control form-control-sm" 
-                id="filterSearch"
-                placeholder="Cari report..."
-                value="{{ request('search') }}">
-        </div>
-
-        {{-- Per Page --}}
-        <div class="col-md-2 mb-2">
-            <select class="form-select form-select-sm" id="filterPerPage">
-                @foreach([10, 20, 50, 100, 500, 1000, 'Tampilkan semua'] as $size)
-                    <option value="{{ $size }}" 
-                        {{ request('per_page', 10) == $size ? 'selected' : '' }}>
-                        {{ $size }} {{ $size!=='Tampilkan semua' ? 'Per halaman' : '' }}
-                    </option>
-                @endforeach
-            </select>
         </div>
 
     </div>

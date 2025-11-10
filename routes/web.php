@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('reports/create/{reportDesign}', [ReportController::class, 'createFromDesign'])->name('reports.create-from-design');
     Route::post('reports/bulk-action', [ReportController::class, 'bulkAction'])->name('reports.bulk-action');
     Route::get('reports/export', [ReportController::class, 'exportList'])->name('reports.export.list'); 
+    Route::get('/reports/export/list-pdf', [ReportController::class, 'exportListPdf'])->name('reports.export.list.pdf');
     Route::get('reports/{report}/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');
     Route::resource('reports', ReportController::class); 
 	

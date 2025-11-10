@@ -499,6 +499,28 @@ class ReportController
         return Excel::download(new ReportListExport($reports), $fileName);
     }
 
+    public function exportListPdf(Request $request)
+    {
+        $reports = $this->getFilteredReports($request)
+                        ->load(['reportDesign.fields', 'reportDesign.subDesigns.fields', 'subData']);
+
+        if ($reports->isEmpty()) {
+            return back()->with('error', 'Tidak ada data untuk diexport');
+        }
+
+        $timestamp = now()->format('Y-m-d H.i');
+        $username  = auth()->user()->name;
+
+        $pdf = \PDF::loadView('exports.report-list-pdf', [
+            'reports' => $reports
+        ])->setPaper('a4', 'portrait');
+
+        $fileName = "Rekap Report {$timestamp} - Download {$username}.pdf";
+
+        return $pdf->stream($fileName);
+    }
+
+
     public function exportPdf(Report $report)
     {
         $pdf = \PDF::loadView('exports.report-pdf', [

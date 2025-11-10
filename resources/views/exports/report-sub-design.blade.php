@@ -26,8 +26,24 @@
                     <td>{{ $report->reportDesign->name }}</td>
 
                     @foreach($subDesign->fields as $field)
+                        @php $v = $row->data[$field->name] ?? null; @endphp
                         <td>
-                            {{ $row->data[$field->name] ?? '' }}
+                            {{-- Jika tanda tangan --}}
+                            @if($field->type === 'signing' && $v)
+                                (Tanda Tangan)
+                            
+                            {{-- Jika field berupa file atau gambar --}}
+                            @elseif(in_array($field->type, ['image', 'file']) && $v)
+                                <a href="{{ asset($v) }}" target="_blank">Lampiran</a>
+
+                            {{-- Jika field berupa array --}}
+                            @elseif(is_array($v))
+                                {{ json_encode($v, JSON_UNESCAPED_UNICODE) }}
+
+                            {{-- Nilai biasa --}}
+                            @else
+                                {{ $v }}
+                            @endif
                         </td>
                     @endforeach
                 </tr>

@@ -19,7 +19,7 @@ class RolePermissionSeeder extends Seeder
             'menu.view', 'menu.create', 'menu.edit', 'menu.delete',
             'permission.view', 'permission.create', 'permission.edit', 'permission.delete',
             'role.view', 'role.create', 'role.edit', 'role.delete',
-            'report.view', 'report.create', 'report.edit', 'report.delete',
+            'report.view', 'report.create', 'report.edit', 'report.delete', 'report.approval',
             'report-design.view', 'report-design.create', 'report-design.edit', 'report-design.delete',
             'custom-script.view', 'custom-script.create', 'custom-script.edit', 'custom-script.delete'
         ];

@@ -31,9 +31,11 @@ class CreateReportFieldsTable extends Migration
                 'year', 
                 'checkbox', 
                 'select',
+                'multi_select',
                 'map',
                 'personnel',
-                'attendance'
+                'attendance',
+                'signing'
             ]);
             $table->boolean('required')->default(false);
             $table->text('default_value')->nullable();
